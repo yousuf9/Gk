@@ -3,8 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion, useScroll, useSpring } from 'motion/react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+} from 'motion/react';
 import {
   ArrowRight,
   ArrowUp,
@@ -16,14 +22,18 @@ import {
   Calendar,
   Check,
   Compass,
-  Download,
+  Flag,
+  Globe,
   GraduationCap,
   Heart,
+  Lightbulb,
   Linkedin,
   MapPin,
+  Maximize2,
   Menu,
   Quote,
   Repeat,
+  Sprout,
   Star,
   Target,
   Trophy,
@@ -44,19 +54,17 @@ import {
   dcbPillars,
   educations,
   experiences,
+  fourCompanionsPosterImage,
+  fullAcknowledgementStatement,
+  Leader,
+  leadershipDispatches,
+  lifelongCompanions,
   marqueeQuotes,
+  navLinks,
   skills,
   tcbPillars,
   testimonials,
 } from './data/content';
-
-const topBarLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Books', href: '#books' },
-  { label: 'Frameworks', href: '#framework' },
-  { label: 'Reviews', href: '#testimonials' },
-  { label: 'Career', href: '#experience' },
-];
 
 const synthesisConnections = [
   {
@@ -106,6 +114,65 @@ const synthesisConnections = [
   },
 ];
 
+const companionIcons = [Lightbulb, Flag, Sprout, Heart];
+
+function MagneticButton({
+  children,
+  onClick,
+  href,
+  target,
+  rel,
+  className = '',
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  target?: string;
+  rel?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 260, damping: 20, mass: 0.4 });
+  const springY = useSpring(y, { stiffness: 260, damping: 20, mass: 0.4 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((e.clientX - centerX) * 0.22);
+    y.set((e.clientY - centerY) * 0.22);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: springX, y: springY }}
+      className="inline-block"
+    >
+      {href ? (
+        <a href={href} target={target} rel={rel} onClick={onClick} className={className}>
+          {children}
+        </a>
+      ) : (
+        <button type="button" onClick={onClick} className={className}>
+          {children}
+        </button>
+      )}
+    </motion.div>
+  );
+}
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -151,7 +218,7 @@ function Navbar() {
 
         {/* Zone 2: 5 concise single-line navigation links */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-ink-300">
-          {topBarLinks.map((item) => (
+          {navLinks.map((item) => (
             <a
               key={item.href}
               href={item.href}
@@ -169,12 +236,12 @@ function Navbar() {
 
         {/* Zone 3: 1 primary action */}
         <div className="flex items-center gap-3 shrink-0">
-          <button
+          <MagneticButton
             onClick={() => scrollToSection('#books')}
             className="hidden sm:inline-flex px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-ink-950 text-xs font-semibold tracking-wide hover:brightness-110 transition-all shadow-lg shadow-gold-500/20 whitespace-nowrap shrink-0 cursor-pointer"
           >
             Explore Books
-          </button>
+          </MagneticButton>
 
           <button
             className="md:hidden p-2 text-white hover:text-gold-400 transition-colors"
@@ -186,7 +253,7 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Futuristic scroll progress beam */}
+      {/* Scroll progress light beam */}
       <motion.div
         style={{ scaleX }}
         className="absolute bottom-0 left-0 right-0 h-[1.5px] origin-left bg-gradient-to-r from-gold-400 via-teal-400 to-gold-500"
@@ -202,7 +269,7 @@ function Navbar() {
             className="md:hidden bg-ink-950/95 backdrop-blur-xl border-b border-white/10 mt-3"
           >
             <div className="px-6 py-5 flex flex-col gap-4">
-              {topBarLinks.map((item) => (
+              {navLinks.map((item) => (
                 <button
                   key={item.href}
                   onClick={() => scrollToSection(item.href)}
@@ -225,8 +292,16 @@ function Navbar() {
   );
 }
 
-function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
-  const [activeLens, setActiveLens] = useState<'overview' | 'dcb' | 'tcb'>('overview');
+function HeroSection({
+  onSelectBook,
+  onOpenPoster,
+}: {
+  onSelectBook: (book: Book) => void;
+  onOpenPoster: () => void;
+}) {
+  const [activeLens, setActiveLens] = useState<
+    'overview' | 'companions' | 'dcb' | 'tcb'
+  >('overview');
 
   return (
     <section
@@ -239,11 +314,11 @@ function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-10 items-stretch">
-          {/* Left Column: Typographic Hierarchy & Controls */}
+          {/* Left Column: Choreographed Typographic Hierarchy */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7 flex flex-col justify-between py-2"
           >
             <div>
@@ -278,38 +353,37 @@ function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
                   {authorInfo.location}
                 </span>
                 <span aria-hidden="true">·</span>
-                <span>Chief / Business Head at Adani Cement</span>
+                <span>{authorInfo.availability}</span>
                 <span aria-hidden="true">·</span>
-                <span className="tabular-nums">{authorInfo.followers} LinkedIn Followers</span>
+                <span className="text-gold-300">{authorInfo.website}</span>
               </div>
             </div>
 
             <div className="mt-10 pt-8 border-t border-white/10">
               <div className="flex flex-wrap items-center gap-4">
-                <a
+                <MagneticButton
                   href="#books"
                   className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-400 text-ink-950 text-sm font-semibold hover:bg-gold-300 transition-all shadow-xl shadow-gold-500/20 whitespace-nowrap shrink-0"
                 >
                   Explore the Books
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </MagneticButton>
 
-                <a
-                  href="#framework"
+                <MagneticButton
+                  href="#companions"
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl glass text-white text-sm font-semibold hover:bg-white/10 transition-all whitespace-nowrap shrink-0"
                 >
-                  Interactive DCB × TCB Matrix
-                </a>
+                  <Lightbulb className="w-4 h-4 text-gold-400" />
+                  Four Lifelong Companions
+                </MagneticButton>
 
-                <a
-                  href="https://www.linkedin.com/in/gopal-krishna-670a4970"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <MagneticButton
+                  href="#leaders"
                   className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl border border-white/10 text-ink-300 hover:text-white hover:border-white/25 text-sm font-medium transition-all whitespace-nowrap shrink-0"
                 >
-                  <Linkedin className="w-4 h-4 text-gold-400" />
-                  LinkedIn
-                </a>
+                  <Award className="w-4 h-4 text-gold-400" />
+                  Top Leaders
+                </MagneticButton>
               </div>
             </div>
           </motion.div>
@@ -321,17 +395,22 @@ function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
             transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-5 flex flex-col justify-between"
           >
-            {/* Interactive Lens Switcher (Functional Segmented Controls) */}
-            <div className="flex items-center gap-1 p-1.5 rounded-xl glass mb-4 self-start">
+            {/* Interactive Lens Switcher */}
+            <div className="flex flex-wrap items-center gap-1 p-1.5 rounded-xl glass mb-4 self-start">
               {[
                 { id: 'overview', label: '01. Dual Mission' },
-                { id: 'dcb', label: '02. DCB Formula' },
-                { id: 'tcb', label: '03. TCB Framework' },
+                { id: 'companions', label: '02. 4 Companions' },
+                { id: 'dcb', label: '03. DCB' },
+                { id: 'tcb', label: '04. TCB' },
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveLens(tab.id as 'overview' | 'dcb' | 'tcb')}
-                  className={`relative px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  onClick={() =>
+                    setActiveLens(
+                      tab.id as 'overview' | 'companions' | 'dcb' | 'tcb'
+                    )
+                  }
+                  className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                     activeLens === tab.id
                       ? 'text-ink-950'
                       : 'text-ink-300 hover:text-white'
@@ -396,6 +475,53 @@ function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
                         >
                           Inspect Book II (TCB) <ArrowUpRight className="w-3.5 h-3.5" />
                         </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeLens === 'companions' && (
+                  <motion.div
+                    key="companions"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.25 }}
+                    className="relative h-full min-h-[460px] flex flex-col justify-end p-7"
+                  >
+                    <img
+                      src={fourCompanionsPosterImage}
+                      alt="Four Lifelong Companions for lasting achievement — Curiosity, Courage, Perseverance, Gratitude with Humility"
+                      referrerPolicy="no-referrer"
+                      className="absolute inset-0 w-full h-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/75 to-transparent" />
+
+                    <div className="relative z-10">
+                      <p className="text-xs uppercase tracking-[0.2em] text-gold-300">
+                        Leadership Philosophy
+                      </p>
+                      <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
+                        Four Lifelong Companions
+                      </h2>
+                      <p className="text-xs text-ink-200 mt-1.5">
+                        Curiosity · Courage · Perseverance · Gratitude with Humility
+                      </p>
+
+                      <div className="mt-5 pt-4 border-t border-white/15 flex items-center justify-between gap-4">
+                        <button
+                          onClick={onOpenPoster}
+                          className="text-xs font-semibold text-gold-300 hover:text-gold-200 inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Maximize2 className="w-3.5 h-3.5" />
+                          View Full Poster
+                        </button>
+                        <a
+                          href="#companions"
+                          className="text-xs font-semibold text-teal-300 hover:text-teal-200 inline-flex items-center gap-1"
+                        >
+                          Read Field Dispatches <ArrowRight className="w-3.5 h-3.5" />
+                        </a>
                       </div>
                     </div>
                   </motion.div>
@@ -553,24 +679,24 @@ function HeroSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) {
               detail: 'Adani Cement · Aparna · Prism Johnson',
             },
             {
-              value: '2 Books',
-              label: 'Published Frameworks',
-              detail: 'The DCB Formula · The TCB Framework',
+              value: '4 Companions',
+              label: 'Lifelong Leadership Pillars',
+              detail: 'Curiosity · Courage · Perseverance · Gratitude',
             },
             {
-              value: '7,156+',
-              label: 'Global Network',
-              detail: 'Active LinkedIn Executive Community',
+              value: '15 Titans',
+              label: 'Industry Leaders Honored',
+              detail: 'Adani · Birla · Vedanta · Aparna',
             },
             {
               value: '4.4 / 5.0',
               label: 'Critical Acclaim',
-              detail: 'Deified Publications · 17+ Featured Reviews',
+              detail: 'Amazon · Flipkart · Kindle · Google Play',
             },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-gold-400/30 transition-colors"
+              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-gold-400/35 transition-colors"
             >
               <div className="font-serif text-2xl sm:text-3xl font-bold text-gradient-gold tabular-nums">
                 {stat.value}
@@ -632,7 +758,13 @@ function AboutSection() {
   return (
     <section id="about" className="relative py-28 lg:py-36 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="max-w-3xl mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mb-16"
+        >
           <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
             01. About the Author
           </p>
@@ -642,11 +774,16 @@ function AboutSection() {
           >
             A mentor’s perspective on meaningful growth
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-12 items-stretch">
-          {/* Left Portrait Stack */}
-          <div className="lg:col-span-5">
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-5"
+          >
             <TiltCard
               glowColor="gold"
               intensity={6}
@@ -671,10 +808,15 @@ function AboutSection() {
                 </div>
               </div>
             </TiltCard>
-          </div>
+          </motion.div>
 
-          {/* Right Interactive Executive Narrative */}
-          <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-7 flex flex-col justify-between space-y-8"
+          >
             <div className="p-7 sm:p-8 rounded-3xl glass">
               <p className="text-xs uppercase tracking-[0.2em] text-teal-300 mb-3">
                 Executive Synopsis
@@ -684,7 +826,6 @@ function AboutSection() {
               </p>
             </div>
 
-            {/* Interactive Chapter Selector */}
             <div className="space-y-4">
               <div className="grid sm:grid-cols-3 gap-3">
                 {bioChapters.map((chapter, idx) => (
@@ -749,7 +890,7 @@ function AboutSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -762,7 +903,13 @@ function BooksSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) 
       <div className="absolute inset-0 bg-gradient-to-b from-ink-950 via-ink-900/60 to-ink-950 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
+        >
           <div className="max-w-2xl">
             <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
               02. The Author’s Shelf
@@ -774,128 +921,501 @@ function BooksSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) 
               Two books. <span className="text-gradient-gold">One complete view.</span>
             </h2>
           </div>
-          <p className="text-ink-300 text-base max-w-md leading-relaxed">
-            The first builds the leader within. The second aligns the business around
-            sustainable performance. Click any volume to inspect its core architecture.
-          </p>
-        </div>
+          <div className="text-ink-300 text-base max-w-md leading-relaxed">
+            <p>
+              The first builds the leader within. The second aligns the business around
+              sustainable performance.
+            </p>
+            <p className="text-xs text-gold-300 mt-2">
+              Both books are available on Amazon and Flipkart, with e-book editions on
+              Kindle · www.gopalkrishna.in
+            </p>
+          </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {books.map((book) => (
-            <TiltCard
+          {books.map((book, idx) => (
+            <motion.div
               key={book.id}
-              glowColor={book.accent}
-              intensity={6}
-              className={`group rounded-[2rem] overflow-hidden border ${
-                book.accent === 'gold'
-                  ? 'border-gold-500/30 hover:border-gold-400/60'
-                  : 'border-teal-400/30 hover:border-teal-300/60'
-              } bg-ink-900 shadow-2xl`}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.65, delay: idx * 0.12 }}
             >
-              <article className="relative h-full min-h-[620px] flex flex-col justify-between">
-                <div className="absolute inset-0">
-                  <img
-                    src={book.image}
-                    alt={book.title}
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (target.src !== book.fallbackImage) {
-                        target.src = book.fallbackImage;
-                      }
-                    }}
-                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
-                      book.id === 'dcb' ? 'object-[25%_center]' : 'object-center'
-                    }`}
-                  />
-                  <div
-                    className={`absolute inset-0 ${
-                      book.accent === 'gold'
-                        ? 'bg-gradient-to-t from-ink-950 via-ink-950/85 to-gold-950/25'
-                        : 'bg-gradient-to-t from-ink-950 via-ink-950/85 to-teal-950/25'
-                    }`}
-                  />
-                </div>
-
-                {/* Top bar of card */}
-                <div className="relative z-10 p-8 sm:p-10 flex items-center justify-between">
-                  <span
-                    className={`text-xs font-semibold uppercase tracking-[0.18em] ${
-                      book.accent === 'gold' ? 'text-gold-300' : 'text-teal-300'
-                    }`}
-                  >
-                    {book.eyebrow}
-                  </span>
-
-                  <button
-                    onClick={() => onSelectBook(book)}
-                    className="px-3.5 py-1.5 rounded-lg glass text-xs font-semibold text-white hover:bg-white/15 transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                  >
-                    Inspect Architecture
-                  </button>
-                </div>
-
-                {/* Bottom content of card */}
-                <div className="relative z-10 p-8 sm:p-10 pt-0">
-                  <h3 className="font-serif text-4xl sm:text-5xl font-bold text-white leading-[0.98] max-w-md">
-                    {book.shortTitle}
-                  </h3>
-
-                  <p
-                    className={`mt-3 font-serif text-xl italic ${
-                      book.accent === 'gold' ? 'text-gold-300' : 'text-teal-300'
-                    }`}
-                  >
-                    {book.subtitle}
-                  </p>
-
-                  <p className="mt-4 text-ink-200 leading-relaxed max-w-lg text-sm sm:text-base">
-                    {book.description}
-                  </p>
-
-                  <ul className="mt-6 space-y-2">
-                    {book.points.map((point) => (
-                      <li
-                        key={point}
-                        className="flex items-center gap-2.5 text-sm text-ink-200"
-                      >
-                        <Check
-                          className={`w-4 h-4 shrink-0 ${
-                            book.accent === 'gold' ? 'text-gold-400' : 'text-teal-400'
-                          }`}
-                        />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-8 flex flex-wrap items-center gap-3">
-                    <a
-                      href={book.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all ${
+              <TiltCard
+                glowColor={book.accent}
+                intensity={6}
+                className={`group rounded-[2rem] overflow-hidden border ${
+                  book.accent === 'gold'
+                    ? 'border-gold-500/30 hover:border-gold-400/60'
+                    : 'border-teal-400/30 hover:border-teal-300/60'
+                } bg-ink-900 shadow-2xl`}
+              >
+                <article className="relative h-full min-h-[620px] flex flex-col justify-between">
+                  <div className="absolute inset-0">
+                    <img
+                      src={book.image}
+                      alt={book.title}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src !== book.fallbackImage) {
+                          target.src = book.fallbackImage;
+                        }
+                      }}
+                      className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                        book.id === 'dcb' ? 'object-[25%_center]' : 'object-center'
+                      }`}
+                    />
+                    <div
+                      className={`absolute inset-0 ${
                         book.accent === 'gold'
-                          ? 'bg-gold-400 text-ink-950 hover:bg-gold-300'
-                          : 'bg-teal-400 text-ink-950 hover:bg-teal-300'
+                          ? 'bg-gradient-to-t from-ink-950 via-ink-950/85 to-gold-950/25'
+                          : 'bg-gradient-to-t from-ink-950 via-ink-950/85 to-teal-950/25'
+                      }`}
+                    />
+                  </div>
+
+                  <div className="relative z-10 p-8 sm:p-10 flex items-center justify-between">
+                    <span
+                      className={`text-xs font-semibold uppercase tracking-[0.18em] ${
+                        book.accent === 'gold' ? 'text-gold-300' : 'text-teal-300'
                       }`}
                     >
-                      {book.cta}
-                      <ArrowUpRight className="w-4 h-4" />
-                    </a>
+                      {book.eyebrow}
+                    </span>
 
                     <button
                       onClick={() => onSelectBook(book)}
-                      className="px-5 py-3 rounded-xl glass text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-lg glass text-xs font-semibold text-white hover:bg-white/15 transition-colors cursor-pointer whitespace-nowrap shrink-0"
                     >
-                      Interactive Synopsis
+                      Inspect Architecture
                     </button>
                   </div>
-                </div>
-              </article>
-            </TiltCard>
+
+                  <div className="relative z-10 p-8 sm:p-10 pt-0">
+                    <h3 className="font-serif text-4xl sm:text-5xl font-bold text-white leading-[0.98] max-w-md">
+                      {book.shortTitle}
+                    </h3>
+
+                    <p
+                      className={`mt-3 font-serif text-xl italic ${
+                        book.accent === 'gold' ? 'text-gold-300' : 'text-teal-300'
+                      }`}
+                    >
+                      {book.subtitle}
+                    </p>
+
+                    <p className="mt-4 text-ink-200 leading-relaxed max-w-lg text-sm sm:text-base">
+                      {book.description}
+                    </p>
+
+                    <ul className="mt-6 space-y-2">
+                      {book.points.map((point) => (
+                        <li
+                          key={point}
+                          className="flex items-center gap-2.5 text-sm text-ink-200"
+                        >
+                          <Check
+                            className={`w-4 h-4 shrink-0 ${
+                              book.accent === 'gold' ? 'text-gold-400' : 'text-teal-400'
+                            }`}
+                          />
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-8 flex flex-wrap items-center gap-3">
+                      <a
+                        href={book.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all ${
+                          book.accent === 'gold'
+                            ? 'bg-gold-400 text-ink-950 hover:bg-gold-300'
+                            : 'bg-teal-400 text-ink-950 hover:bg-teal-300'
+                        }`}
+                      >
+                        {book.cta}
+                        <ArrowUpRight className="w-4 h-4" />
+                      </a>
+
+                      <button
+                        onClick={() => onSelectBook(book)}
+                        className="px-5 py-3 rounded-xl glass text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      >
+                        Interactive Synopsis
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </TiltCard>
+            </motion.div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function FourCompanionsAndDispatchesSection({
+  onOpenPoster,
+}: {
+  onOpenPoster: () => void;
+}) {
+  const [selectedDispatchId, setSelectedDispatchId] = useState<
+    'b2b-cement' | 'concrete-pour'
+  >('b2b-cement');
+  const [highlightedCompanionIndex, setHighlightedCompanionIndex] = useState<number>(0);
+
+  const activeDispatch =
+    leadershipDispatches.find((d) => d.id === selectedDispatchId) ||
+    leadershipDispatches[0];
+
+  return (
+    <section id="companions" className="relative py-28 lg:py-36 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_30%,rgba(224,171,63,0.12),transparent_36%),radial-gradient(circle_at_85%_70%,rgba(41,195,180,0.12),transparent_36%)] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16"
+        >
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
+              03. Four Lifelong Companions &amp; Field Leadership Dispatches
+            </p>
+            <h2
+              className="font-serif text-4xl sm:text-6xl font-bold text-white mt-3 leading-tight"
+              style={{ textWrap: 'balance' }}
+            >
+              Four Lifelong Companions{' '}
+              <span className="text-gradient-gold">for Lasting Achievement</span>
+            </h2>
+            <p className="text-ink-300 text-base sm:text-lg mt-4 leading-relaxed">
+              Curiosity, Courage, Perseverance, and Gratitude with Humility—how these four
+              companions bridge <span className="text-white">The DCB Success Formula</span>{' '}
+              and <span className="text-white">The TCB Framework</span> on construction
+              sites, batching plants, and executive boardrooms.
+            </p>
+          </div>
+
+          {/* Interactive Field Dispatch Switcher */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
+            <button
+              type="button"
+              onClick={() => setSelectedDispatchId('b2b-cement')}
+              className={`relative px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                selectedDispatchId === 'b2b-cement'
+                  ? 'text-ink-950'
+                  : 'text-ink-300 hover:text-white'
+              }`}
+            >
+              {selectedDispatchId === 'b2b-cement' && (
+                <motion.span
+                  layoutId="dispatchSelectorPill"
+                  transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold-300 to-gold-400"
+                />
+              )}
+              <span className="relative z-10">01. B2B Cement Dispatch</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedDispatchId('concrete-pour')}
+              className={`relative px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                selectedDispatchId === 'concrete-pour'
+                  ? 'text-ink-950'
+                  : 'text-ink-300 hover:text-white'
+              }`}
+            >
+              {selectedDispatchId === 'concrete-pour' && (
+                <motion.span
+                  layoutId="dispatchSelectorPill"
+                  transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-300 to-teal-400"
+                />
+              )}
+              <span className="relative z-10">02. Concrete Pour Dispatch</span>
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Top Row: 4 Lifelong Companions Interactive Cards + Official Poster */}
+        <div className="grid lg:grid-cols-12 gap-10 items-stretch mb-14">
+          {/* Left Column: Official Poster Showcase */}
+          <div className="lg:col-span-5">
+            <TiltCard
+              glowColor="gold"
+              intensity={6}
+              className="rounded-3xl border border-gold-400/35 bg-ink-900 overflow-hidden shadow-2xl h-full flex flex-col justify-between"
+            >
+              <div
+                onClick={onOpenPoster}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') onOpenPoster();
+                }}
+                className="relative group cursor-pointer h-full flex flex-col justify-between"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={fourCompanionsPosterImage}
+                    alt="Four Lifelong Companions for lasting achievement — The DCB Success Formula and The TCB Framework by Gopal Krishna"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute top-4 right-4 px-3.5 py-2 rounded-xl glass-dark text-xs font-semibold text-white inline-flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 className="w-3.5 h-3.5 text-gold-400" />
+                    Expand Artwork
+                  </div>
+                </div>
+
+                <div className="p-6 bg-ink-950/90 border-t border-white/10 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-400">
+                      Official Leadership Edition
+                    </div>
+                    <div className="text-sm font-serif font-bold text-white mt-0.5">
+                      Available on Amazon · Flipkart · Kindle
+                    </div>
+                  </div>
+                  <span className="text-xs text-teal-300 font-medium">
+                    {authorInfo.website}
+                  </span>
+                </div>
+              </div>
+            </TiltCard>
+          </div>
+
+          {/* Right Column: Interactive 4 Companions Matrix */}
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+            <div className="grid sm:grid-cols-2 gap-4">
+              {lifelongCompanions.map((comp, idx) => {
+                const IconComponent = companionIcons[idx];
+                const isSelected = highlightedCompanionIndex === idx;
+                return (
+                  <button
+                    key={comp.id}
+                    type="button"
+                    onClick={() => setHighlightedCompanionIndex(idx)}
+                    className={`text-left p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                      isSelected
+                        ? 'border-gold-400/70 bg-gradient-to-br from-ink-900 via-ink-900 to-gold-950/35 shadow-xl shadow-gold-500/10'
+                        : 'border-white/10 bg-white/[0.03] hover:border-white/25'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold-400/20 to-teal-400/20 border border-gold-400/40 flex items-center justify-center">
+                        <IconComponent className="w-5 h-5 text-gold-400" />
+                      </div>
+                      <span className="text-xs font-mono text-gold-400 tabular-nums">
+                        {comp.index} / 04
+                      </span>
+                    </div>
+
+                    <h3 className="font-serif text-2xl font-bold text-white">
+                      {comp.name}
+                    </h3>
+                    <p className="text-sm text-gold-200/90 italic font-serif mt-1">
+                      “{comp.maxim}”
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Live Companion Comparison Across Both Field Dispatches */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={lifelongCompanions[highlightedCompanionIndex].id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.22 }}
+                className="p-7 sm:p-8 rounded-3xl border border-white/15 bg-gradient-to-br from-ink-900 via-ink-950 to-teal-950/25 space-y-5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                      Companion {lifelongCompanions[highlightedCompanionIndex].index} ·{' '}
+                      {lifelongCompanions[highlightedCompanionIndex].name}
+                    </span>
+                    <h4 className="font-serif text-2xl font-bold text-white mt-1">
+                      {lifelongCompanions[highlightedCompanionIndex].maxim}
+                    </h4>
+                  </div>
+                  <span className="text-xs text-ink-400">
+                    Click any companion above to compare field applications
+                  </span>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="p-5 rounded-2xl bg-white/[0.03] border border-gold-500/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-gold-300 mb-2">
+                      In B2B Cement (Customer Trust)
+                    </div>
+                    <p className="text-sm text-ink-200 leading-relaxed">
+                      {
+                        lifelongCompanions[highlightedCompanionIndex]
+                          .b2bCementApplication
+                      }
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-white/[0.03] border border-teal-400/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-2">
+                      In Concrete Pours (Plant Floor)
+                    </div>
+                    <p className="text-sm text-ink-200 leading-relaxed">
+                      {
+                        lifelongCompanions[highlightedCompanionIndex]
+                          .concretePourApplication
+                      }
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Full Interactive Field Leadership Dispatch Reader */}
+        <AnimatePresence mode="wait">
+          <motion.article
+            key={activeDispatch.id}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -18 }}
+            transition={{ duration: 0.28 }}
+            className="rounded-[2rem] border border-white/15 bg-gradient-to-br from-ink-900 via-ink-950 to-gold-950/20 p-8 sm:p-12 shadow-2xl"
+          >
+            <div className="grid lg:grid-cols-12 gap-10">
+              {/* Left Narrative Column */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                  {activeDispatch.badge}
+                </div>
+
+                <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white leading-tight">
+                  {activeDispatch.title}
+                </h3>
+
+                <div className="p-6 rounded-2xl bg-gold-400/10 border border-gold-400/30">
+                  <Quote className="w-6 h-6 text-gold-400 mb-2" />
+                  <p className="font-serif text-xl sm:text-2xl text-white italic leading-snug">
+                    {activeDispatch.coreQuestion}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {activeDispatch.leadParagraphs.map((para, idx) => (
+                    <p key={idx} className="text-base text-ink-200 leading-relaxed">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+
+                {/* Unboxed topic metadata */}
+                <div className="pt-4 border-t border-white/10 text-xs text-ink-400 flex flex-wrap items-center gap-2">
+                  {activeDispatch.topics.map((topic, i) => (
+                    <React.Fragment key={topic}>
+                      <span className="text-gold-300 font-medium">#{topic.replace(/\s+/g, '')}</span>
+                      {i < activeDispatch.topics.length - 1 && (
+                        <span aria-hidden="true">·</span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right 4 Companions Step-by-Step + DCB & TCB Synthesis */}
+              <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {activeDispatch.companionsInAction.map((item) => (
+                    <div
+                      key={item.number}
+                      className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-gold-400/35 transition-colors"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-serif text-lg font-bold text-white">
+                          {item.name}
+                        </span>
+                        <span className="text-xs font-mono font-bold text-gold-400 tabular-nums">
+                          {item.number}
+                        </span>
+                      </div>
+                      <p className="text-sm text-ink-200 leading-relaxed">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* How DCB & TCB Interlock in this Dispatch */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-6 rounded-2xl border border-gold-500/30 bg-gold-400/[0.05]">
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300 mb-2">
+                      The DCB Success Formula
+                    </div>
+                    <p className="text-sm text-ink-100 leading-relaxed">
+                      {activeDispatch.dcbConnection}
+                    </p>
+                  </div>
+
+                  <div className="p-6 rounded-2xl border border-teal-400/30 bg-teal-400/[0.05]">
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300 mb-2">
+                      The TCB Framework
+                    </div>
+                    <p className="text-sm text-ink-100 leading-relaxed">
+                      {activeDispatch.tcbConnection}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Leader Reflection Callout & Availability Footer */}
+                <div className="p-6 rounded-2xl glass flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-gold-400 font-semibold">
+                      Leader’s Reflection
+                    </div>
+                    <p className="font-serif text-lg text-white italic mt-1">
+                      “{activeDispatch.closingQuestion}”
+                    </p>
+                    <p className="text-xs text-ink-300 mt-2">
+                      {activeDispatch.availabilityNote} ·{' '}
+                      <span className="text-gold-300 font-medium">
+                        {activeDispatch.websiteUrl}
+                      </span>
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedDispatchId(
+                        selectedDispatchId === 'b2b-cement'
+                          ? 'concrete-pour'
+                          : 'b2b-cement'
+                      )
+                    }
+                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                  >
+                    Switch to{' '}
+                    {selectedDispatchId === 'b2b-cement'
+                      ? 'Concrete Pour Dispatch →'
+                      : 'B2B Cement Dispatch →'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.article>
+        </AnimatePresence>
       </div>
     </section>
   );
@@ -913,7 +1433,7 @@ function FrameworkSection() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
-              03. Interactive Operating Architecture
+              04. Interactive Operating Architecture
             </p>
             <h2
               className="font-serif text-4xl sm:text-5xl font-bold text-white mt-3 leading-tight"
@@ -927,7 +1447,6 @@ function FrameworkSection() {
             </p>
           </div>
 
-          {/* Interactive Architecture Switcher */}
           <div className="flex items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
             {[
               { id: 'synthesis', label: 'DCB × TCB Synthesis' },
@@ -964,7 +1483,6 @@ function FrameworkSection() {
               transition={{ duration: 0.25 }}
               className="space-y-8"
             >
-              {/* Interactive 3-Pillar Coupling Selector */}
               <div className="grid md:grid-cols-3 gap-6">
                 {synthesisConnections.map((item, idx) => {
                   const isActive = selectedSynthesisIndex === idx;
@@ -1004,7 +1522,6 @@ function FrameworkSection() {
                 })}
               </div>
 
-              {/* Active Synthesis Deep-Dive Panel */}
               <motion.div
                 key={synthesisConnections[selectedSynthesisIndex].id}
                 initial={{ opacity: 0, y: 10 }}
@@ -1133,6 +1650,188 @@ function FrameworkSection() {
   );
 }
 
+function TopLeadersSection() {
+  const [filterTier, setFilterTier] = useState<'all' | 'chairman' | 'executive'>('all');
+  const [activeLeader, setActiveLeader] = useState<Leader>(acknowledgedLeaders[0]);
+
+  const filteredLeaders = useMemo(() => {
+    if (filterTier === 'all') return acknowledgedLeaders;
+    return acknowledgedLeaders.filter((leader) => leader.tier === filterTier);
+  }, [filterTier]);
+
+  return (
+    <section id="leaders" className="relative py-28 lg:py-36 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(224,171,63,0.1),transparent_38%),radial-gradient(circle_at_80%_75%,rgba(41,195,180,0.09),transparent_38%)] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
+              05. Top Leaders &amp; Mentors Hall of Gratitude
+            </p>
+            <h2
+              className="font-serif text-4xl sm:text-6xl font-bold text-white mt-3 leading-tight"
+              style={{ textWrap: 'balance' }}
+            >
+              Visionary Leaders Who{' '}
+              <span className="text-gradient-gold">Shaped the Journey</span>
+            </h2>
+            <p className="text-ink-300 text-base sm:text-lg mt-4 leading-relaxed">
+              {acknowledgementText}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
+            {[
+              { id: 'all', label: 'All Top Leaders (15)' },
+              { id: 'chairman', label: 'Group Chairmen (5)' },
+              { id: 'executive', label: 'Executive Leaders (10)' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() =>
+                  setFilterTier(tab.id as 'all' | 'chairman' | 'executive')
+                }
+                className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  filterTier === tab.id
+                    ? 'text-ink-950'
+                    : 'text-ink-300 hover:text-white'
+                }`}
+              >
+                {filterTier === tab.id && (
+                  <motion.span
+                    layoutId="leaderFilterPill"
+                    transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold-300 to-gold-400"
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeLeader.name}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.22 }}
+            className="mb-10 p-7 sm:p-9 rounded-3xl border border-gold-400/35 bg-gradient-to-r from-ink-900 via-ink-900/95 to-gold-950/30 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl"
+          >
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 text-ink-950 font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shadow-lg shrink-0">
+                {activeLeader.initials}
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-gold-300 uppercase tracking-[0.18em]">
+                  <span>{activeLeader.organization}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{activeLeader.role}</span>
+                </div>
+                <h3 className="font-serif text-2xl sm:text-4xl font-bold text-white mt-1">
+                  {activeLeader.honorificName}
+                </h3>
+                <p className="text-sm text-ink-300 mt-1">{activeLeader.domain}</p>
+              </div>
+            </div>
+
+            <div className="text-xs text-ink-400 md:text-right shrink-0">
+              <div className="text-gold-300 font-semibold uppercase tracking-wider">
+                Acknowledged Mentor &amp; Leader
+              </div>
+              <div className="mt-1">Click any leader card below to spotlight</div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <AnimatePresence mode="popLayout">
+            {filteredLeaders.map((leader, idx) => {
+              const isSelected = activeLeader.name === leader.name;
+              const isChairman = leader.tier === 'chairman';
+              return (
+                <motion.div
+                  layout
+                  key={leader.name}
+                  initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.25, delay: (idx % 6) * 0.03 }}
+                >
+                  <TiltCard
+                    glowColor={isChairman ? 'gold' : 'teal'}
+                    intensity={5}
+                    className={`rounded-2xl border transition-all duration-300 ${
+                      isSelected
+                        ? 'border-gold-400/70 bg-gradient-to-br from-ink-900 to-gold-950/35 shadow-xl shadow-gold-500/10'
+                        : isChairman
+                        ? 'border-gold-500/25 bg-white/[0.03] hover:border-gold-400/50'
+                        : 'border-white/10 bg-white/[0.025] hover:border-teal-400/45'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setActiveLeader(leader)}
+                      className="w-full h-full text-left p-6 flex flex-col justify-between cursor-pointer"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold shrink-0 ${
+                              isChairman
+                                ? 'bg-gradient-to-br from-gold-300 to-gold-600 text-ink-950 shadow-md shadow-gold-500/20'
+                                : 'bg-teal-400/15 border border-teal-400/35 text-teal-300'
+                            }`}
+                          >
+                            {leader.initials}
+                          </div>
+
+                          <span className="text-xs font-mono text-ink-500 tabular-nums">
+                            #{String(
+                              acknowledgedLeaders.findIndex(
+                                (l) => l.name === leader.name
+                              ) + 1
+                            ).padStart(2, '0')}
+                          </span>
+                        </div>
+
+                        <h3 className="font-serif text-xl font-bold text-white group-hover:text-gold-300 transition-colors">
+                          {leader.honorificName}
+                        </h3>
+
+                        <div className="flex items-center gap-2 text-xs text-gold-400 mt-1.5">
+                          <span>{leader.role}</span>
+                          <span aria-hidden="true">·</span>
+                          <span className="text-ink-300">{leader.organization}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 pt-4 border-t border-white/10 text-xs text-ink-400 leading-relaxed">
+                        {leader.domain}
+                      </div>
+                    </button>
+                  </TiltCard>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="mt-12 p-7 sm:p-8 rounded-3xl glass text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400 mb-3">
+            Official Roll of Gratitude
+          </p>
+          <p className="text-sm sm:text-base text-ink-200 max-w-4xl mx-auto leading-relaxed">
+            {fullAcknowledgementStatement}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TestimonialsSection() {
   const [category, setCategory] = useState<
     'all' | 'press' | 'goodreads' | 'social' | 'verified'
@@ -1166,7 +1865,7 @@ function TestimonialsSection() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
-              04. Readers &amp; Reviewers
+              06. Readers &amp; Reviewers
             </p>
             <h2
               className="font-serif text-4xl sm:text-6xl font-bold text-white mt-3 leading-tight"
@@ -1177,7 +1876,6 @@ function TestimonialsSection() {
             </h2>
           </div>
 
-          {/* Interactive Filter Controls (Functional Buttons) */}
           <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
             {[
               { id: 'all', label: 'All Reviews (16)' },
@@ -1205,7 +1903,6 @@ function TestimonialsSection() {
           </div>
         </div>
 
-        {/* Featured Editorial Review */}
         {featuredReviews.map((review) => (
           <div key={review.id} className="mb-10">
             <TiltCard
@@ -1247,7 +1944,6 @@ function TestimonialsSection() {
           </div>
         ))}
 
-        {/* Filtered Grid of Reader & Press Reviews */}
         <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <AnimatePresence mode="popLayout">
             {gridReviews.map((review) => (
@@ -1294,9 +1990,7 @@ function TestimonialsSection() {
 }
 
 function ExperienceAndCredentialsSection() {
-  const [activeTab, setActiveTab] = useState<
-    'career' | 'credentials' | 'acknowledgements'
-  >('career');
+  const [activeTab, setActiveTab] = useState<'career' | 'credentials'>('career');
 
   return (
     <section id="experience" className="relative py-28 lg:py-36 overflow-hidden">
@@ -1304,7 +1998,7 @@ function ExperienceAndCredentialsSection() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
           <div>
             <p className="text-xs font-semibold text-gold-400 tracking-[0.22em] uppercase">
-              05. Legacy, Credentials &amp; Gratitude
+              07. Career Trajectory &amp; Credentials
             </p>
             <h2
               className="font-serif text-4xl sm:text-5xl font-bold text-white mt-3 leading-tight"
@@ -1317,16 +2011,11 @@ function ExperienceAndCredentialsSection() {
           <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
             {[
               { id: 'career', label: 'Career & Education' },
-              { id: 'credentials', label: 'Certifications & Skills' },
-              { id: 'acknowledgements', label: 'Acknowledgements (15)' },
+              { id: 'credentials', label: 'Certifications & Competencies' },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setActiveTab(
-                    tab.id as 'career' | 'credentials' | 'acknowledgements'
-                  )
-                }
+                onClick={() => setActiveTab(tab.id as 'career' | 'credentials')}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                   activeTab === tab.id
                     ? 'bg-gold-400 text-ink-950 shadow-sm'
@@ -1494,46 +2183,78 @@ function ExperienceAndCredentialsSection() {
               </div>
             </motion.div>
           )}
-
-          {activeTab === 'acknowledgements' && (
-            <motion.div
-              key="acknowledgements"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.22 }}
-              className="space-y-10"
-            >
-              <div className="max-w-3xl mx-auto text-center p-8 rounded-3xl glass">
-                <Quote className="w-7 h-7 text-gold-400 mx-auto mb-3" />
-                <p className="font-serif text-lg sm:text-xl text-ink-100 italic leading-relaxed">
-                  {acknowledgementText}
-                </p>
-              </div>
-
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {acknowledgedLeaders.map((leader) => (
-                  <div
-                    key={leader.name}
-                    className="flex items-center gap-3.5 p-4 rounded-2xl glass hover:border-gold-400/35 transition-colors"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
-                      <Award className="w-4 h-4 text-gold-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold text-white truncate">
-                        {leader.name}
-                      </div>
-                      <div className="text-xs text-ink-400 truncate">{leader.role}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
         </AnimatePresence>
       </div>
     </section>
+  );
+}
+
+function PosterLightboxModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (open) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 bg-ink-950/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 12 }}
+            transition={{ duration: 0.22 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-3xl w-full max-h-[92vh] rounded-3xl border border-white/15 bg-ink-900 overflow-hidden shadow-2xl flex flex-col"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                  Four Lifelong Companions for Lasting Achievement
+                </p>
+                <p className="text-xs text-ink-400 mt-0.5">
+                  The DCB Success Formula &amp; The TCB Framework · Gopal Krishna
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                aria-label="Close poster viewer"
+                className="w-9 h-9 rounded-full glass flex items-center justify-center text-ink-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-4 sm:p-6 flex items-center justify-center bg-ink-950">
+              <img
+                src={fourCompanionsPosterImage}
+                alt="Four Lifelong Companions for lasting achievement — Curiosity, Courage, Perseverance, Gratitude with Humility"
+                referrerPolicy="no-referrer"
+                className="max-h-[76vh] w-auto rounded-2xl object-contain shadow-2xl"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -1661,142 +2382,7 @@ function BookDossierModal({
   );
 }
 
-function ExportWebsiteModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (open) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose]);
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-          onClick={onClose}
-          className="fixed inset-0 z-50 bg-ink-950/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 16 }}
-            transition={{ duration: 0.22 }}
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-ink-900 p-6 sm:p-9 shadow-2xl overflow-hidden"
-          >
-            <button
-              onClick={onClose}
-              aria-label="Close export modal"
-              className="absolute top-6 right-6 w-10 h-10 rounded-full glass flex items-center justify-center text-ink-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
-              Custom Domain Deployment
-            </p>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-2">
-              Download Website Export (.ZIP)
-            </h3>
-            <p className="text-sm text-ink-300 mt-2 leading-relaxed">
-              Choose the package that matches how you want to host your custom domain:
-            </p>
-
-            <div className="grid sm:grid-cols-2 gap-4 mt-6">
-              <div className="p-5 rounded-2xl border border-gold-500/35 bg-gradient-to-br from-ink-900 to-gold-950/25 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-gold-300">
-                    Option 1 · Instant Drag &amp; Drop
-                  </div>
-                  <h4 className="font-serif text-xl font-bold text-white mt-1">
-                    Production Static Build
-                  </h4>
-                  <p className="text-xs text-ink-300 mt-2 leading-relaxed">
-                    Compiled HTML, CSS, JS, and local images (`dist/`). Ready to upload
-                    directly to Netlify Drop, Cloudflare Pages, cPanel, Hostinger, or AWS
-                    S3 with zero build step.
-                  </p>
-                </div>
-
-                <a
-                  href="/exports/gopal-krishna-static-build.zip"
-                  download="gopal-krishna-static-build.zip"
-                  className="mt-5 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gold-400 text-ink-950 text-xs font-semibold hover:bg-gold-300 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Static Build (.ZIP)
-                </a>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-teal-400/35 bg-gradient-to-br from-ink-900 to-teal-950/25 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-teal-300">
-                    Option 2 · Full Codebase
-                  </div>
-                  <h4 className="font-serif text-xl font-bold text-white mt-1">
-                    React + Vite Source ZIP
-                  </h4>
-                  <p className="text-xs text-ink-300 mt-2 leading-relaxed">
-                    Complete TypeScript, Tailwind CSS v4, and Motion source code with
-                    `package.json` and deployment guide for GitHub, Vercel, or Netlify CI.
-                  </p>
-                </div>
-
-                <a
-                  href="/exports/gopal-krishna-source-code.zip"
-                  download="gopal-krishna-source-code.zip"
-                  className="mt-5 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-400 text-ink-950 text-xs font-semibold hover:bg-teal-300 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Source Code (.ZIP)
-                </a>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-ink-300 space-y-1.5">
-              <div className="font-semibold text-white">
-                Quick Custom Domain Setup:
-              </div>
-              <p>
-                1. For fastest setup without terminal commands, unzip{' '}
-                <span className="text-gold-300 font-medium">
-                  gopal-krishna-static-build.zip
-                </span>{' '}
-                and drag the folder into{' '}
-                <span className="text-white font-medium">app.netlify.com/drop</span> or{' '}
-                <span className="text-white font-medium">Cloudflare Pages</span>, then
-                bind your custom domain in Domain Settings.
-              </p>
-              <p>
-                2. For continuous Git deployment, unzip{' '}
-                <span className="text-teal-300 font-medium">
-                  gopal-krishna-source-code.zip
-                </span>
-                , push to GitHub, and connect to Vercel or Netlify (`npm run build`, output
-                directory `dist`).
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function Footer({ onOpenExport }: { onOpenExport: () => void }) {
+function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -1814,6 +2400,9 @@ function Footer({ onOpenExport }: { onOpenExport: () => void }) {
               Formula and The TCB Framework. Where discipline meets direction, success
               becomes inevitable.
             </p>
+            <p className="text-xs text-gold-300 mt-3">
+              Available on Amazon · Flipkart · Kindle
+            </p>
           </div>
 
           <div>
@@ -1821,7 +2410,11 @@ function Footer({ onOpenExport }: { onOpenExport: () => void }) {
               Navigation
             </h4>
             <div className="flex flex-col gap-2.5">
-              {topBarLinks.map((item) => (
+              {[
+                ...navLinks,
+                { label: 'DCB × TCB Matrix', href: '#framework' },
+                { label: 'Career & Credentials', href: '#experience' },
+              ].map((item) => (
                 <button
                   key={item.href}
                   onClick={() =>
@@ -1842,6 +2435,14 @@ function Footer({ onOpenExport }: { onOpenExport: () => void }) {
               Direct Channels
             </h4>
             <div className="flex flex-col gap-3">
+              <a
+                href="https://www.gopalkrishna.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-gold-300 hover:text-gold-200 transition-colors"
+              >
+                <Globe className="w-4 h-4" /> www.gopalkrishna.in
+              </a>
               <a
                 href="https://www.linkedin.com/in/gopal-krishna-670a4970"
                 target="_blank"
@@ -1866,38 +2467,24 @@ function Footer({ onOpenExport }: { onOpenExport: () => void }) {
               >
                 <BookOpen className="w-4 h-4" /> The TCB Framework (Amazon)
               </a>
-              <button
-                onClick={onOpenExport}
-                className="inline-flex items-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors text-left cursor-pointer pt-1"
-              >
-                <Download className="w-4 h-4" /> Export Website (.ZIP)
-              </button>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
           <p className="text-xs text-ink-500">
-            © {new Date().getFullYear()} Gopal Krishna. All rights reserved.
+            © {new Date().getFullYear()} Gopal Krishna · www.gopalkrishna.in · All rights
+            reserved.
           </p>
-          <div className="flex items-center gap-5">
-            <button
-              onClick={onOpenExport}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg glass text-xs font-semibold text-gold-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Download ZIP for Custom Domain
-            </button>
-            <button
-              onClick={scrollToTop}
-              className="inline-flex items-center gap-2 text-xs text-ink-400 hover:text-gold-400 transition-colors group cursor-pointer"
-            >
-              Back to top
-              <span className="w-8 h-8 rounded-full glass flex items-center justify-center group-hover:bg-white/10 transition-all">
-                <ArrowUp className="w-3.5 h-3.5" />
-              </span>
-            </button>
-          </div>
+          <button
+            onClick={scrollToTop}
+            className="inline-flex items-center gap-2 text-xs text-ink-400 hover:text-gold-400 transition-colors group cursor-pointer"
+          >
+            Back to top
+            <span className="w-8 h-8 rounded-full glass flex items-center justify-center group-hover:bg-white/10 transition-all">
+              <ArrowUp className="w-3.5 h-3.5" />
+            </span>
+          </button>
         </div>
       </div>
     </footer>
@@ -1906,24 +2493,29 @@ function Footer({ onOpenExport }: { onOpenExport: () => void }) {
 
 export default function App() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [exportOpen, setExportOpen] = useState(false);
+  const [posterOpen, setPosterOpen] = useState(false);
 
   return (
     <div className="relative min-h-screen bg-ink-950 text-white selection:bg-gold-400 selection:text-ink-950">
       <KineticCanvas />
       <Navbar />
       <main className="relative z-10">
-        <HeroSection onSelectBook={setSelectedBook} />
+        <HeroSection
+          onSelectBook={setSelectedBook}
+          onOpenPoster={() => setPosterOpen(true)}
+        />
         <QuoteMarquee />
         <AboutSection />
         <BooksSection onSelectBook={setSelectedBook} />
+        <FourCompanionsAndDispatchesSection onOpenPoster={() => setPosterOpen(true)} />
         <FrameworkSection />
+        <TopLeadersSection />
         <TestimonialsSection />
         <ExperienceAndCredentialsSection />
       </main>
-      <Footer onOpenExport={() => setExportOpen(true)} />
+      <Footer />
       <BookDossierModal book={selectedBook} onClose={() => setSelectedBook(null)} />
-      <ExportWebsiteModal open={exportOpen} onClose={() => setExportOpen(false)} />
+      <PosterLightboxModal open={posterOpen} onClose={() => setPosterOpen(false)} />
     </div>
   );
 }

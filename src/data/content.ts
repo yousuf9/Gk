@@ -31,9 +31,42 @@ export interface DcbPillar {
   points: string[];
 }
 
+export interface LifelongCompanion {
+  id: string;
+  index: string;
+  name: string;
+  maxim: string;
+  b2bCementApplication: string;
+  concretePourApplication: string;
+}
+
+export interface LeadershipDispatch {
+  id: 'b2b-cement' | 'concrete-pour';
+  badge: string;
+  title: string;
+  coreQuestion: string;
+  leadParagraphs: string[];
+  companionsInAction: {
+    number: string;
+    name: string;
+    text: string;
+  }[];
+  dcbConnection: string;
+  tcbConnection: string;
+  closingQuestion: string;
+  availabilityNote: string;
+  websiteUrl: string;
+  topics: string[];
+}
+
 export interface Leader {
   name: string;
+  honorificName: string;
   role: string;
+  organization: string;
+  tier: 'chairman' | 'executive';
+  initials: string;
+  domain: string;
 }
 
 export interface Experience {
@@ -71,16 +104,16 @@ export interface Testimonial {
 
 export const navLinks: NavLink[] = [
   { label: 'About', href: '#about' },
-  { label: 'The Books', href: '#books' },
+  { label: 'Books', href: '#books' },
+  { label: 'Companions', href: '#companions' },
+  { label: 'Top Leaders', href: '#leaders' },
   { label: 'Reviews', href: '#testimonials' },
-  { label: 'DCB Framework', href: '#framework' },
-  { label: 'Acknowledgements', href: '#acknowledgements' },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Credentials', href: '#credentials' },
 ];
 
 export const portraitImage = '/images/19972f2d-f13f-4958-91d5-ea5027d907d9.jpeg';
 export const booksHoldingImage = '/images/f898e051-99fe-44bd-8fd4-9bdf1522d066.jpeg';
+export const fourCompanionsPosterImage =
+  '/assets/aistudio/578fbc2b-3e27-4aac-af50-4163de63fc0b_b0c31b63.jpeg';
 export const dcbCoverExternalUrl =
   'https://books.google.com/books/publisher/content?id=prrwEQAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE715xvLyBLD2pTB_LcQavAHhrlTq7LyFPKFpIxTPzGzfzbPIETY_c-U6lQszEZPdotGk1KTWq7B-ZXQAWCW4MzRiCXTbdvYmV7gElywlT3SvIhYMC5WYJYFIkB4CRjOKzSsdwM-l';
 export const dcbCoverLocalUrl = '/images/dcb-cover.jpg';
@@ -91,6 +124,8 @@ export const authorInfo = {
   location: 'Ahmedabad, Gujarat, India',
   followers: '7,156+',
   experienceYears: '22+',
+  website: 'www.gopalkrishna.in',
+  availability: 'Available on Amazon • Flipkart • Kindle',
   summary:
     'Gopal Krishna is a business leader, strategic thinker, and author of The DCB Success Formula and The TCB Framework. With more than two decades of experience across infrastructure, manufacturing, and high-growth environments, he has led teams, built scalable systems, and driven performance through disciplined execution and structured leadership.',
   longBio: [
@@ -99,6 +134,136 @@ export const authorInfo = {
     'His first book, The DCB Success Formula, captures the personal operating system behind sustainable success: Discipline, Consistency, and Belief. His second book, The TCB Framework, connects that mindset to business performance by bringing Top-line, Cost-line, and Bottom-line thinking together.',
   ],
 };
+
+export const lifelongCompanions: LifelongCompanion[] = [
+  {
+    id: 'curiosity',
+    index: '01',
+    name: 'Curiosity',
+    maxim: 'Ask the question others overlook.',
+    b2bCementApplication:
+      'Curiosity takes me beyond the sales report. The report shows that our share of the customer’s business has fallen. A conversation at the site can reveal why a competing supplier earned the next order.',
+    concretePourApplication:
+      'Curiosity gets me out of the review room and onto the plant floor. A dispatch report can tell me how late we were. The people doing the work can tell me why.',
+  },
+  {
+    id: 'courage',
+    index: '02',
+    name: 'Courage',
+    maxim: 'Act when the answer is uncertain.',
+    b2bCementApplication:
+      'Courage helps me ask, “Did we promise a delivery date before checking with the plant?” When I’m willing to examine my own decisions, the team has more room to speak honestly about what happened.',
+    concretePourApplication:
+      'Courage helps me ask, “Did a decision I made contribute to the delay?” The answer can be uncomfortable. It can also give the team the freedom to speak honestly.',
+  },
+  {
+    id: 'perseverance',
+    index: '03',
+    name: 'Perseverance',
+    maxim: 'Keep going when progress is slow.',
+    b2bCementApplication:
+      'Perseverance means following through beyond the first order we win back. Did we deliver the promised quantity on time? Did we check the customer’s requirement for next week? That follow-through gives the customer a reason to order from us again.',
+    concretePourApplication:
+      'Perseverance means coming back on the next shift to see whether the change worked, and staying with it until the customer can count on us.',
+  },
+  {
+    id: 'gratitude',
+    index: '04',
+    name: 'Gratitude with Humility',
+    maxim: 'Give credit to those who helped.',
+    b2bCementApplication:
+      'Gratitude with humility means sharing the credit when business returns. The CAC partner who kept the conversation open, the dispatcher who secured the slot and the driver who reached the site on time all helped rebuild trust.',
+    concretePourApplication:
+      'Gratitude with humility means remembering, when the customer thanks us, to thank the driver who flagged the problem and the batcher who helped solve it.',
+  },
+];
+
+export const leadershipDispatches: LeadershipDispatch[] = [
+  {
+    id: 'b2b-cement',
+    badge: 'Field Dispatch 01 · B2B Cement & Customer Trust',
+    title: 'Earning Back the Next Order in B2B Cement',
+    coreQuestion: '“What did the customer need that we missed?”',
+    leadParagraphs: [
+      'When a project customer who buys cement from us places the next order with another supplier, the first question I want to ask is simple. “What did the customer need that we missed?”',
+      'In B2B cement, the answer can look different depending on whom we ask. Our CAC partner may know when the order was discussed. The logistics team can tell us which delivery slot was available. The site engineer can tell us when the cement was actually needed. Listening to all three brings me back to four lifelong companions I value in leadership.',
+    ],
+    companionsInAction: [
+      {
+        number: '01',
+        name: 'Curiosity',
+        text: 'Curiosity takes me beyond the sales report. The report shows that our share of the customer’s business has fallen. A conversation at the site can reveal why a competing supplier earned the next order.',
+      },
+      {
+        number: '02',
+        name: 'Courage',
+        text: 'Courage helps me ask, “Did we promise a delivery date before checking with the plant?” When I’m willing to examine my own decisions, the team has more room to speak honestly about what happened.',
+      },
+      {
+        number: '03',
+        name: 'Perseverance',
+        text: 'Perseverance means following through beyond the first order we win back. Did we deliver the promised quantity on time? Did we check the customer’s requirement for next week? That follow-through gives the customer a reason to order from us again.',
+      },
+      {
+        number: '04',
+        name: 'Gratitude with Humility',
+        text: 'Gratitude with humility means sharing the credit when business returns. The CAC partner who kept the conversation open, the dispatcher who secured the slot and the driver who reached the site on time all helped rebuild trust.',
+      },
+    ],
+    dcbConnection:
+      'In The DCB Success Formula, I express success as Discipline × Consistency × Belief. Belief gives us the confidence to approach an inactive customer again. Discipline makes us check availability before making a commitment. Consistency gives the customer a reason to believe our word.',
+    tcbConnection:
+      'In The TCB Framework, those habits show up in three places. Repeat orders grow the Top-line. Better dispatch planning reduces waiting and freight costs on the Cost-line. When we grow volume at a healthy margin and collect on time, the Bottom-line and cash flow both benefit.',
+    closingQuestion:
+      'Think of a customer whose trust you had to earn back. Which of these four companions made the difference?',
+    availabilityNote:
+      'Both books are available on Amazon and Flipkart, with e-book editions on Kindle.',
+    websiteUrl: 'www.gopalkrishna.in',
+    topics: ['B2B Cement', 'Leadership', 'The DCB Success Formula', 'The TCB Framework'],
+  },
+  {
+    id: 'concrete-pour',
+    badge: 'Field Dispatch 02 · Concrete Operations & Plant Floor',
+    title: 'On-Time Concrete Pours & Plant Floor Leadership',
+    coreQuestion: '“Where did we lose time, and who saw it happen?”',
+    leadParagraphs: [
+      'When a concrete pour runs late, the most useful question a leader can ask may be the simplest one. “Where did we lose time, and who saw it happen?”',
+      'The driver, the batcher and the customer may each know a different part of the answer. What we do with their answers brings me back to four lifelong companions I’ve come to value in leadership.',
+    ],
+    companionsInAction: [
+      {
+        number: '01',
+        name: 'Curiosity',
+        text: 'Curiosity gets me out of the review room and onto the plant floor. A dispatch report can tell me how late we were. The people doing the work can tell me why.',
+      },
+      {
+        number: '02',
+        name: 'Courage',
+        text: 'Courage helps me ask, “Did a decision I made contribute to the delay?” The answer can be uncomfortable. It can also give the team the freedom to speak honestly.',
+      },
+      {
+        number: '03',
+        name: 'Perseverance',
+        text: 'Perseverance means coming back on the next shift to see whether the change worked, and staying with it until the customer can count on us.',
+      },
+      {
+        number: '04',
+        name: 'Gratitude with Humility',
+        text: 'Gratitude with humility means remembering, when the customer thanks us, to thank the driver who flagged the problem and the batcher who helped solve it.',
+      },
+    ],
+    dcbConnection:
+      'These companions run through both my books. In The DCB Success Formula, I express success as Discipline × Consistency × Belief. It takes belief to try a different approach, discipline to act on it and consistency to follow through across shifts.',
+    tcbConnection:
+      'In The TCB Framework, I look at what those habits deliver for the business. A customer who books the next pour strengthens the Top-line. Fewer hours lost to waiting improve the Cost-line. Together, repeat business and lower delivery costs support the Bottom-line.',
+    closingQuestion:
+      'Which of these four companions has shaped the way you lead? I’d love to hear the moment that taught you its value.',
+    availabilityNote:
+      'Both books are available on Amazon and Flipkart, with e-book editions on Kindle.',
+    websiteUrl: 'www.gopalkrishna.in',
+    topics: ['Leadership', 'The DCB Success Formula', 'The TCB Framework', 'Lifelong Learning'],
+  },
+];
 
 export const books: Book[] = [
   {
@@ -198,22 +363,145 @@ export const dcbPillars: DcbPillar[] = [
 export const acknowledgementText =
   'This book would not have been possible without the guidance, support, and encouragement of many individuals. I extend my sincere gratitude to my mentors and leaders who have shaped my thinking and inspired me to move beyond conventional boundaries.';
 
+export const fullAcknowledgementStatement =
+  'I would like to acknowledge: Adani Group Chairman Mr. Gautam Adani and Mr. Karan Adani, Birla Group Chairman Mr. Kumar Mangalam Birla, Vedanta Group Chairman Mr. Anil Agarwal, Aparna Group Chairman Mr. S.S. Reddy, Mr. Vneet Jain, Mr. Ajay Kapoor, Mr. Atul Desai, Mr. S. Tatar, Mr. S. Sondur, Mr. Rakesh Vijayvargiya, Mr. Vinod Bahety, Mr. Manoj Sharma, Mr. Sanjay Behl, Mr. Ashwin Reddy.';
+
 export const acknowledgedLeaders: Leader[] = [
-  { name: 'Gautam Adani', role: 'Chairman, Adani Group' },
-  { name: 'Karan Adani', role: 'Adani Group' },
-  { name: 'Kumar Mangalam Birla', role: 'Chairman, Birla Group' },
-  { name: 'Anil Agarwal', role: 'Chairman, Vedanta Group' },
-  { name: 'S.S. Reddy', role: 'Chairman, Aparna Group' },
-  { name: 'Vneet Jain', role: 'Leader' },
-  { name: 'Ajay Kapoor', role: 'Leader' },
-  { name: 'Atul Desai', role: 'Leader' },
-  { name: 'S. Tatar', role: 'Leader' },
-  { name: 'S. Sondur', role: 'Leader' },
-  { name: 'Rakesh Vijayvargiya', role: 'Leader' },
-  { name: 'Vinod Bahety', role: 'Leader' },
-  { name: 'Manoj Sharma', role: 'Leader' },
-  { name: 'Sanjay Behl', role: 'Leader' },
-  { name: 'Ashwin Reddy', role: 'Leader' },
+  {
+    name: 'Gautam Adani',
+    honorificName: 'Mr. Gautam Adani',
+    role: 'Chairman',
+    organization: 'Adani Group',
+    tier: 'chairman',
+    initials: 'GA',
+    domain: 'Nation-Building Infrastructure & Industrial Vision',
+  },
+  {
+    name: 'Karan Adani',
+    honorificName: 'Mr. Karan Adani',
+    role: 'Leadership',
+    organization: 'Adani Group',
+    tier: 'chairman',
+    initials: 'KA',
+    domain: 'Strategic Scale, Cement & Logistics Transformation',
+  },
+  {
+    name: 'Kumar Mangalam Birla',
+    honorificName: 'Mr. Kumar Mangalam Birla',
+    role: 'Chairman',
+    organization: 'Birla Group',
+    tier: 'chairman',
+    initials: 'KB',
+    domain: 'Global Conglomerate Stewardship & Institutional Excellence',
+  },
+  {
+    name: 'Anil Agarwal',
+    honorificName: 'Mr. Anil Agarwal',
+    role: 'Chairman',
+    organization: 'Vedanta Group',
+    tier: 'chairman',
+    initials: 'AA',
+    domain: 'Natural Resources & Entrepreneurial Resilience',
+  },
+  {
+    name: 'S.S. Reddy',
+    honorificName: 'Mr. S.S. Reddy',
+    role: 'Chairman',
+    organization: 'Aparna Group',
+    tier: 'chairman',
+    initials: 'SR',
+    domain: 'Real Estate & Building Materials Innovation',
+  },
+  {
+    name: 'Vneet Jain',
+    honorificName: 'Mr. Vneet Jain',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'VJ',
+    domain: 'Infrastructure Execution & Strategic Growth',
+  },
+  {
+    name: 'Ajay Kapoor',
+    honorificName: 'Mr. Ajay Kapoor',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'AK',
+    domain: 'Cement & Building Materials Leadership',
+  },
+  {
+    name: 'Atul Desai',
+    honorificName: 'Mr. Atul Desai',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'AD',
+    domain: 'Operational Excellence & Commercial Strategy',
+  },
+  {
+    name: 'S. Tatar',
+    honorificName: 'Mr. S. Tatar',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'ST',
+    domain: 'Strategic Transformation & Governance',
+  },
+  {
+    name: 'S. Sondur',
+    honorificName: 'Mr. S. Sondur',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'SS',
+    domain: 'Engineering & Industrial Systems',
+  },
+  {
+    name: 'Rakesh Vijayvargiya',
+    honorificName: 'Mr. Rakesh Vijayvargiya',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'RV',
+    domain: 'Business Operations & Market Expansion',
+  },
+  {
+    name: 'Vinod Bahety',
+    honorificName: 'Mr. Vinod Bahety',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'VB',
+    domain: 'Financial Discipline & Value Creation',
+  },
+  {
+    name: 'Manoj Sharma',
+    honorificName: 'Mr. Manoj Sharma',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'MS',
+    domain: 'Organizational Leadership & Execution',
+  },
+  {
+    name: 'Sanjay Behl',
+    honorificName: 'Mr. Sanjay Behl',
+    role: 'Executive Leader',
+    organization: 'Industry Mentor',
+    tier: 'executive',
+    initials: 'SB',
+    domain: 'Brand, Commercial & Consumer Strategy',
+  },
+  {
+    name: 'Ashwin Reddy',
+    honorificName: 'Mr. Ashwin Reddy',
+    role: 'Executive Leader',
+    organization: 'Aparna Group',
+    tier: 'executive',
+    initials: 'AR',
+    domain: 'Enterprise Scale & Modern Manufacturing',
+  },
 ];
 
 export const experiences: Experience[] = [
@@ -436,19 +724,6 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
-export const platformBadgeStyles: Record<string, string> = {
-  'Deified Publications': 'border-gold-500/30 bg-gold-400/10 text-gold-300',
-  Medium: 'border-white/15 bg-white/5 text-white',
-  'Youth Ki Awaaz': 'border-teal-400/30 bg-teal-400/10 text-teal-300',
-  Goodreads: 'border-amber-500/30 bg-amber-400/10 text-amber-300',
-  Facebook: 'border-blue-500/30 bg-blue-400/10 text-blue-300',
-  Instagram: 'border-pink-500/30 bg-pink-400/10 text-pink-300',
-  Amazon: 'border-orange-500/30 bg-orange-400/10 text-orange-300',
-  LinkedIn: 'border-sky-500/30 bg-sky-400/10 text-sky-300',
-  Threads: 'border-white/15 bg-white/5 text-white',
-  X: 'border-white/15 bg-white/5 text-white',
-};
-
 export const skills: string[] = [
   'Business Strategy',
   'Strategic Planning',
@@ -472,4 +747,5 @@ export const marqueeQuotes: string[] = [
   'Consistency turns ordinary effort into uncommon results.',
   'Lead yourself first. Then lead the room.',
   'Growth is a practice, not a performance.',
+  'Curiosity · Courage · Perseverance · Gratitude with Humility.',
 ];
