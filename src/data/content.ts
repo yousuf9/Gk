@@ -103,7 +103,7 @@ export interface Testimonial {
 }
 
 export const navLinks: NavLink[] = [
-  { label: 'About', href: '#about' },
+  { label: 'Diwali', href: '#diwali' },
   { label: 'Books', href: '#books' },
   { label: 'Companions', href: '#companions' },
   { label: 'Top Leaders', href: '#leaders' },
@@ -114,10 +114,59 @@ export const portraitImage = '/images/19972f2d-f13f-4958-91d5-ea5027d907d9.jpeg'
 export const booksHoldingImage = '/images/f898e051-99fe-44bd-8fd4-9bdf1522d066.jpeg';
 export const fourCompanionsPosterImage =
   '/assets/aistudio/578fbc2b-3e27-4aac-af50-4163de63fc0b_b0c31b63.jpeg';
+export const diwaliSpecialImage =
+  '/assets/aistudio/a16761e2-16a7-469a-b86a-8bdae8adc3f7_ec490893.jpeg';
 export const dcbCoverExternalUrl =
   'https://books.google.com/books/publisher/content?id=prrwEQAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE715xvLyBLD2pTB_LcQavAHhrlTq7LyFPKFpIxTPzGzfzbPIETY_c-U6lQszEZPdotGk1KTWq7B-ZXQAWCW4MzRiCXTbdvYmV7gElywlT3SvIhYMC5WYJYFIkB4CRjOKzSsdwM-l';
 export const dcbCoverLocalUrl = '/images/dcb-cover.jpg';
 export const authorAtWorkImage = '/images/19972f2d-f13f-4958-91d5-ea5027d907d9.jpeg';
+
+export const diwaliSpecialContent = {
+  hindiTitle: 'ज्ञान का प्रकाश, विश्वास की शक्ति',
+  englishTitle: 'A Diwali of Light, Learning and Possibility',
+  sanskritShloka: '॥ तमसो मा ज्योतिर्गमय ॥',
+  shlokaTranslation: 'Lead me from darkness to light.',
+  hindiGreeting: 'आपको एवं आपके परिवार को दीपावली की हार्दिक शुभकामनाएँ।',
+  hindiMessage:
+    'दीपावली का प्रकाश हमें अपने भीतर झाँकने, जीवन के प्रति आभार व्यक्त करने और नई आशाओं के साथ आगे बढ़ने की प्रेरणा देता है। आइए, अपने ज्ञान को अच्छे कर्मों में बदलें और अपनी प्रगति से दूसरों के जीवन में भी उजाला लाएँ।',
+  englishParagraphs: [
+    'Diwali is a moment to pause with gratitude, reconnect with those who matter, and renew our commitment to a meaningful life.',
+    'Through The DCB Success Formula, I share the power of Discipline × Consistency × Belief. Through The TCB Framework, I explore how Top-line, Cost-line and Bottom-line work together to support sustainable business growth.',
+    'This Diwali, may these ideas inspire purposeful action, thoughtful choices and the belief that we can keep learning and contributing.',
+  ],
+  hindiPledge: 'एक दीप ज्ञान का। एक संकल्प अच्छे कर्म का।',
+  englishPledge: 'Light a lamp of learning. Take a step with purpose.',
+  closingWish:
+    'Wishing you peace, good health, prosperity and the joy of growing together.',
+  authorSignoff: 'गोपाल कृष्णा | Gopal Krishna',
+  authorRoles: 'Author • Mentor • Coach • Trainer',
+  diyas: [
+    {
+      id: 'gyan',
+      hindi: 'ज्ञान का दीप',
+      english: 'Lamp of Learning',
+      caption: 'Seek clarity beyond reports and surface assumptions.',
+    },
+    {
+      id: 'sankalp',
+      hindi: 'संकल्प का दीप',
+      english: 'Lamp of Discipline',
+      caption: 'Turn knowledge into consistent, purposeful daily action.',
+    },
+    {
+      id: 'vishwas',
+      hindi: 'विश्वास का दीप',
+      english: 'Lamp of Belief',
+      caption: 'Hold steady conviction that uplifts teams and communities.',
+    },
+    {
+      id: 'aabhar',
+      hindi: 'आभार का दीप',
+      english: 'Lamp of Gratitude',
+      caption: 'Share credit with every person who helped light the way.',
+    },
+  ],
+};
 
 export const authorInfo = {
   tagline: 'Two books. One mission: turn ambition into measurable performance.',
@@ -743,9 +792,9 @@ export const skills: string[] = [
 ];
 
 export const marqueeQuotes: string[] = [
+  '॥ तमसो मा ज्योतिर्गमय ॥ — Lead me from darkness to light.',
+  'एक दीप ज्ञान का। एक संकल्प अच्छे कर्म का। — Light a lamp of learning. Take a step with purpose.',
   'Discipline creates the room where confidence grows.',
   'Consistency turns ordinary effort into uncommon results.',
-  'Lead yourself first. Then lead the room.',
-  'Growth is a practice, not a performance.',
   'Curiosity · Courage · Perseverance · Gratitude with Humility.',
 ];

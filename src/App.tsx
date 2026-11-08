@@ -23,6 +23,7 @@ import {
   Check,
   Compass,
   Flag,
+  Flame,
   Globe,
   GraduationCap,
   Heart,
@@ -52,6 +53,8 @@ import {
   booksHoldingImage,
   certifications,
   dcbPillars,
+  diwaliSpecialContent,
+  diwaliSpecialImage,
   educations,
   experiences,
   fourCompanionsPosterImage,
@@ -297,11 +300,11 @@ function HeroSection({
   onOpenPoster,
 }: {
   onSelectBook: (book: Book) => void;
-  onOpenPoster: () => void;
+  onOpenPoster: (imgUrl: string, title: string, subtitle: string) => void;
 }) {
   const [activeLens, setActiveLens] = useState<
-    'overview' | 'companions' | 'dcb' | 'tcb'
-  >('overview');
+    'diwali' | 'overview' | 'companions' | 'dcb'
+  >('diwali');
 
   return (
     <section
@@ -309,7 +312,7 @@ function HeroSection({
       className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-28 pb-16"
     >
       {/* Architectural spatial grid backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_24%,rgba(41,195,180,0.16),transparent_32%),radial-gradient(circle_at_16%_78%,rgba(224,171,63,0.14),transparent_34%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_24%,rgba(224,171,63,0.17),transparent_34%),radial-gradient(circle_at_16%_78%,rgba(41,195,180,0.14),transparent_34%)] pointer-events-none" />
       <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:64px_64px] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
@@ -323,12 +326,14 @@ function HeroSection({
           >
             <div>
               {/* Quiet unboxed editorial kicker */}
-              <div className="flex items-center gap-3 text-xs font-medium tracking-[0.2em] uppercase text-gold-400 mb-6">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-medium tracking-[0.2em] uppercase text-gold-400 mb-6">
                 <span>Author</span>
                 <span aria-hidden="true">·</span>
-                <span>Business Leader</span>
+                <span>Mentor</span>
                 <span aria-hidden="true">·</span>
-                <span>Transformation Strategist</span>
+                <span>Coach</span>
+                <span aria-hidden="true">·</span>
+                <span>Business Leader</span>
               </div>
 
               <h1
@@ -362,11 +367,11 @@ function HeroSection({
             <div className="mt-10 pt-8 border-t border-white/10">
               <div className="flex flex-wrap items-center gap-4">
                 <MagneticButton
-                  href="#books"
+                  href="#diwali"
                   className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-400 text-ink-950 text-sm font-semibold hover:bg-gold-300 transition-all shadow-xl shadow-gold-500/20 whitespace-nowrap shrink-0"
                 >
-                  Explore the Books
-                  <ArrowRight className="w-4 h-4" />
+                  <Flame className="w-4 h-4" />
+                  Diwali Special Message
                 </MagneticButton>
 
                 <MagneticButton
@@ -378,11 +383,11 @@ function HeroSection({
                 </MagneticButton>
 
                 <MagneticButton
-                  href="#leaders"
+                  href="#books"
                   className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl border border-white/10 text-ink-300 hover:text-white hover:border-white/25 text-sm font-medium transition-all whitespace-nowrap shrink-0"
                 >
-                  <Award className="w-4 h-4 text-gold-400" />
-                  Top Leaders
+                  <BookOpen className="w-4 h-4 text-gold-400" />
+                  The Books
                 </MagneticButton>
               </div>
             </div>
@@ -398,16 +403,16 @@ function HeroSection({
             {/* Interactive Lens Switcher */}
             <div className="flex flex-wrap items-center gap-1 p-1.5 rounded-xl glass mb-4 self-start">
               {[
-                { id: 'overview', label: '01. Dual Mission' },
-                { id: 'companions', label: '02. 4 Companions' },
-                { id: 'dcb', label: '03. DCB' },
-                { id: 'tcb', label: '04. TCB' },
+                { id: 'diwali', label: '01. शुभ दीपावली' },
+                { id: 'overview', label: '02. Dual Mission' },
+                { id: 'companions', label: '03. 4 Companions' },
+                { id: 'dcb', label: '04. Books' },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() =>
                     setActiveLens(
-                      tab.id as 'overview' | 'companions' | 'dcb' | 'tcb'
+                      tab.id as 'diwali' | 'overview' | 'companions' | 'dcb'
                     )
                   }
                   className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
@@ -429,11 +434,64 @@ function HeroSection({
             </div>
 
             <TiltCard
-              glowColor={activeLens === 'tcb' ? 'teal' : 'gold'}
+              glowColor="gold"
               intensity={7}
-              className="rounded-3xl border border-white/15 bg-ink-900/90 overflow-hidden shadow-2xl"
+              className="rounded-3xl border border-gold-400/30 bg-ink-900/90 overflow-hidden shadow-2xl"
             >
               <AnimatePresence mode="wait">
+                {activeLens === 'diwali' && (
+                  <motion.div
+                    key="diwali"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.25 }}
+                    className="relative h-full min-h-[460px] flex flex-col justify-end p-7"
+                  >
+                    <img
+                      src={diwaliSpecialImage}
+                      alt="Shubh Deepavali — Gopal Krishna wishing a Diwali of Light, Learning and Possibility"
+                      referrerPolicy="no-referrer"
+                      className="absolute inset-0 w-full h-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/65 to-transparent" />
+
+                    <div className="relative z-10">
+                      <p className="text-xs uppercase tracking-[0.2em] text-gold-300">
+                        {diwaliSpecialContent.sanskritShloka}
+                      </p>
+                      <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
+                        {diwaliSpecialContent.hindiTitle}
+                      </h2>
+                      <p className="text-xs text-gold-200 mt-1">
+                        {diwaliSpecialContent.englishTitle}
+                      </p>
+
+                      <div className="mt-5 pt-4 border-t border-white/15 flex items-center justify-between gap-4">
+                        <button
+                          onClick={() =>
+                            onOpenPoster(
+                              diwaliSpecialImage,
+                              diwaliSpecialContent.hindiTitle,
+                              diwaliSpecialContent.englishTitle
+                            )
+                          }
+                          className="text-xs font-semibold text-gold-300 hover:text-gold-200 inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Maximize2 className="w-3.5 h-3.5" />
+                          View Full Portrait
+                        </button>
+                        <a
+                          href="#diwali"
+                          className="text-xs font-semibold text-teal-300 hover:text-teal-200 inline-flex items-center gap-1"
+                        >
+                          Read Diwali Message <ArrowRight className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {activeLens === 'overview' && (
                   <motion.div
                     key="overview"
@@ -510,7 +568,13 @@ function HeroSection({
 
                       <div className="mt-5 pt-4 border-t border-white/15 flex items-center justify-between gap-4">
                         <button
-                          onClick={onOpenPoster}
+                          onClick={() =>
+                            onOpenPoster(
+                              fourCompanionsPosterImage,
+                              'Four Lifelong Companions for Lasting Achievement',
+                              'The DCB Success Formula & The TCB Framework · Gopal Krishna'
+                            )
+                          }
                           className="text-xs font-semibold text-gold-300 hover:text-gold-200 inline-flex items-center gap-1.5 cursor-pointer"
                         >
                           <Maximize2 className="w-3.5 h-3.5" />
@@ -593,73 +657,6 @@ function HeroSection({
                     </div>
                   </motion.div>
                 )}
-
-                {activeLens === 'tcb' && (
-                  <motion.div
-                    key="tcb"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.25 }}
-                    className="relative h-full min-h-[460px] flex flex-col justify-between p-7 bg-gradient-to-br from-ink-900 via-ink-950 to-teal-950/30"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.2em] text-teal-300">
-                          Book Two · Executive Performance Lens
-                        </p>
-                        <h2 className="font-serif text-3xl font-bold text-white mt-1">
-                          {books[1].shortTitle}
-                        </h2>
-                        <p className="text-sm font-serif italic text-teal-300 mt-1">
-                          {books[1].subtitle}
-                        </p>
-                      </div>
-                      <img
-                        src={books[1].image}
-                        alt={books[1].title}
-                        referrerPolicy="no-referrer"
-                        className="w-20 h-28 object-cover rounded-xl border border-teal-400/30 shadow-lg shrink-0"
-                      />
-                    </div>
-
-                    <div className="space-y-3 my-4">
-                      {tcbPillars.map((p) => (
-                        <div
-                          key={p.letter}
-                          className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center gap-3.5"
-                        >
-                          <span className="w-9 h-9 rounded-lg bg-teal-400 text-ink-950 font-serif font-bold text-lg flex items-center justify-center shrink-0">
-                            {p.letter}
-                          </span>
-                          <div>
-                            <div className="text-sm font-semibold text-white">{p.name}</div>
-                            <div className="text-xs text-ink-300 line-clamp-1">
-                              {p.description}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                      <button
-                        onClick={() => onSelectBook(books[1])}
-                        className="text-xs font-semibold text-teal-300 hover:text-teal-200 inline-flex items-center gap-1.5 cursor-pointer"
-                      >
-                        Open Full Dossier <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                      <a
-                        href={books[1].link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 rounded-lg bg-teal-400 text-ink-950 text-xs font-semibold hover:bg-teal-300 transition-colors"
-                      >
-                        Amazon India ↗
-                      </a>
-                    </div>
-                  </motion.div>
-                )}
               </AnimatePresence>
             </TiltCard>
           </motion.div>
@@ -730,6 +727,259 @@ function QuoteMarquee() {
             <ArrowRight className="w-4 h-4 opacity-60" />
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function DiwaliSpecialSection({
+  onOpenPoster,
+}: {
+  onOpenPoster: (imgUrl: string, title: string, subtitle: string) => void;
+}) {
+  const [litDiyas, setLitDiyas] = useState<Record<string, boolean>>({
+    gyan: true,
+    sankalp: true,
+    vishwas: true,
+    aabhar: true,
+  });
+
+  const toggleDiya = (id: string) => {
+    setLitDiyas((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const lightAllDiyas = () => {
+    setLitDiyas({ gyan: true, sankalp: true, vishwas: true, aabhar: true });
+  };
+
+  const litCount = Object.values(litDiyas).filter(Boolean).length;
+
+  return (
+    <section id="diwali" className="relative py-28 lg:py-36 overflow-hidden">
+      {/* Warm golden festive radial ambiance */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(224,171,63,0.18),transparent_42%),radial-gradient(circle_at_80%_75%,rgba(236,199,107,0.14),transparent_42%)] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* Header with Sanskrit Shloka */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <div className="inline-flex items-center gap-3 text-gold-300 font-serif text-lg sm:text-xl tracking-wide mb-3">
+            <Flame className="w-5 h-5 text-gold-400 fill-gold-400" />
+            <span>{diwaliSpecialContent.sanskritShloka}</span>
+            <Flame className="w-5 h-5 text-gold-400 fill-gold-400" />
+          </div>
+          <p className="text-xs uppercase tracking-[0.24em] text-gold-400 font-semibold">
+            {diwaliSpecialContent.shlokaTranslation}
+          </p>
+
+          <h2
+            className="font-serif text-4xl sm:text-6xl font-bold text-gradient-gold mt-5 leading-tight"
+            style={{ textWrap: 'balance' }}
+          >
+            {diwaliSpecialContent.hindiTitle}
+          </h2>
+          <p className="font-serif text-2xl sm:text-3xl text-white mt-2 italic">
+            {diwaliSpecialContent.englishTitle}
+          </p>
+        </motion.div>
+
+        {/* Main 2-Column Split: Festive Portrait Left + Bilingual Message Right */}
+        <div className="grid lg:grid-cols-12 gap-10 items-stretch">
+          {/* Left Column: Diwali Special Portrait Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-5"
+          >
+            <TiltCard
+              glowColor="gold"
+              intensity={6}
+              className="rounded-3xl border border-gold-400/45 bg-ink-900 overflow-hidden shadow-2xl shadow-gold-500/10 h-full flex flex-col justify-between"
+            >
+              <div
+                onClick={() =>
+                  onOpenPoster(
+                    diwaliSpecialImage,
+                    diwaliSpecialContent.hindiTitle,
+                    diwaliSpecialContent.englishTitle
+                  )
+                }
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    onOpenPoster(
+                      diwaliSpecialImage,
+                      diwaliSpecialContent.hindiTitle,
+                      diwaliSpecialContent.englishTitle
+                    );
+                  }
+                }}
+                className="relative group cursor-pointer h-full flex flex-col justify-between"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={diwaliSpecialImage}
+                    alt="शुभ दीपावली — Happy Diwali message from Gopal Krishna with The DCB Success Formula and The TCB Framework"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute top-4 right-4 px-3.5 py-2 rounded-xl glass-dark text-xs font-semibold text-white inline-flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 className="w-3.5 h-3.5 text-gold-400" />
+                    Expand Portrait
+                  </div>
+                </div>
+
+                <div className="p-6 bg-gradient-to-r from-ink-950 via-gold-950/40 to-ink-950 border-t border-gold-400/25 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300">
+                      {diwaliSpecialContent.authorSignoff}
+                    </div>
+                    <div className="text-xs text-ink-300 mt-1">
+                      {diwaliSpecialContent.authorRoles}
+                    </div>
+                  </div>
+                  <Flame className="w-5 h-5 text-gold-400 fill-gold-400 shrink-0" />
+                </div>
+              </div>
+            </TiltCard>
+          </motion.div>
+
+          {/* Right Column: Complete Hindi & English Diwali Message */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-7 flex flex-col justify-between space-y-6"
+          >
+            {/* Hindi Blessing Card */}
+            <div className="p-7 sm:p-8 rounded-3xl border border-gold-400/35 bg-gradient-to-br from-ink-900 via-ink-900/95 to-gold-950/35 shadow-xl space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">
+                  शुभ दीपावली · Festive Reflections
+                </span>
+                <span className="text-xs text-gold-400 font-serif">
+                  {diwaliSpecialContent.sanskritShloka}
+                </span>
+              </div>
+
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-gold-300 leading-snug">
+                {diwaliSpecialContent.hindiGreeting}
+              </h3>
+
+              <p className="text-base sm:text-lg text-ink-100 leading-relaxed">
+                {diwaliSpecialContent.hindiMessage}
+              </p>
+            </div>
+
+            {/* English Reflection & DCB/TCB Connection */}
+            <div className="p-7 sm:p-8 rounded-3xl glass space-y-4">
+              {diwaliSpecialContent.englishParagraphs.map((para, idx) => (
+                <p key={idx} className="text-base text-ink-100 leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
+
+            {/* Sankalp / Pledge Banner */}
+            <div className="p-7 sm:p-8 rounded-3xl border border-gold-400/40 bg-gradient-to-r from-gold-950/40 via-ink-900 to-teal-950/30 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="space-y-1.5">
+                <p className="font-serif text-xl sm:text-2xl font-bold text-gold-300">
+                  {diwaliSpecialContent.hindiPledge}
+                </p>
+                <p className="font-serif text-lg text-white italic">
+                  {diwaliSpecialContent.englishPledge}
+                </p>
+                <p className="text-sm text-ink-200 pt-2">
+                  {diwaliSpecialContent.closingWish}
+                </p>
+              </div>
+
+              <div className="sm:text-right shrink-0 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-6">
+                <div className="font-serif text-lg font-bold text-white">
+                  {diwaliSpecialContent.authorSignoff}
+                </div>
+                <div className="text-xs text-gold-300 mt-1">
+                  {diwaliSpecialContent.authorRoles}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Interactive 4 Diyas of Learning & Purpose */}
+        <div className="mt-12 p-7 sm:p-8 rounded-3xl border border-gold-500/25 bg-white/[0.02]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                Interactive Sankalp · ज्ञान और कर्म के चार दीप
+              </p>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mt-1">
+                Light the Four Lamps of Learning &amp; Purpose ({litCount} / 4 Lit)
+              </h3>
+            </div>
+            {litCount < 4 && (
+              <button
+                type="button"
+                onClick={lightAllDiyas}
+                className="px-4 py-2 rounded-xl bg-gold-400 text-ink-950 text-xs font-semibold hover:bg-gold-300 transition-colors self-start sm:self-auto cursor-pointer"
+              >
+                Illuminate All 4 Lamps
+              </button>
+            )}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {diwaliSpecialContent.diyas.map((diya) => {
+              const isLit = litDiyas[diya.id];
+              return (
+                <button
+                  key={diya.id}
+                  type="button"
+                  onClick={() => toggleDiya(diya.id)}
+                  className={`text-left p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                    isLit
+                      ? 'border-gold-400/60 bg-gradient-to-b from-gold-400/15 via-ink-900 to-ink-900 shadow-lg shadow-gold-500/10'
+                      : 'border-white/10 bg-ink-950/60 opacity-65 hover:opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        isLit
+                          ? 'bg-gold-400 text-ink-950 shadow-md shadow-gold-400/40'
+                          : 'bg-white/5 text-ink-400'
+                      }`}
+                    >
+                      <Flame className={`w-5 h-5 ${isLit ? 'fill-current' : ''}`} />
+                    </div>
+                    <span className="text-xs font-semibold text-gold-300">
+                      {isLit ? 'प्रज्वलित · Lit' : 'Click to Light'}
+                    </span>
+                  </div>
+
+                  <div className="font-serif text-lg font-bold text-white">
+                    {diya.hindi}
+                  </div>
+                  <div className="text-xs font-semibold text-gold-300 mt-0.5">
+                    {diya.english}
+                  </div>
+                  <p className="text-xs text-ink-300 mt-2 leading-relaxed">
+                    {diya.caption}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -1062,7 +1312,7 @@ function BooksSection({ onSelectBook }: { onSelectBook: (book: Book) => void }) 
 function FourCompanionsAndDispatchesSection({
   onOpenPoster,
 }: {
-  onOpenPoster: () => void;
+  onOpenPoster: (imgUrl: string, title: string, subtitle: string) => void;
 }) {
   const [selectedDispatchId, setSelectedDispatchId] = useState<
     'b2b-cement' | 'concrete-pour'
@@ -1078,7 +1328,6 @@ function FourCompanionsAndDispatchesSection({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_30%,rgba(224,171,63,0.12),transparent_36%),radial-gradient(circle_at_85%_70%,rgba(41,195,180,0.12),transparent_36%)] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-6">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1105,7 +1354,6 @@ function FourCompanionsAndDispatchesSection({
             </p>
           </div>
 
-          {/* Interactive Field Dispatch Switcher */}
           <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl glass self-start">
             <button
               type="button"
@@ -1147,9 +1395,7 @@ function FourCompanionsAndDispatchesSection({
           </div>
         </motion.div>
 
-        {/* Top Row: 4 Lifelong Companions Interactive Cards + Official Poster */}
         <div className="grid lg:grid-cols-12 gap-10 items-stretch mb-14">
-          {/* Left Column: Official Poster Showcase */}
           <div className="lg:col-span-5">
             <TiltCard
               glowColor="gold"
@@ -1157,11 +1403,23 @@ function FourCompanionsAndDispatchesSection({
               className="rounded-3xl border border-gold-400/35 bg-ink-900 overflow-hidden shadow-2xl h-full flex flex-col justify-between"
             >
               <div
-                onClick={onOpenPoster}
+                onClick={() =>
+                  onOpenPoster(
+                    fourCompanionsPosterImage,
+                    'Four Lifelong Companions for Lasting Achievement',
+                    'The DCB Success Formula & The TCB Framework · Gopal Krishna'
+                  )
+                }
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') onOpenPoster();
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    onOpenPoster(
+                      fourCompanionsPosterImage,
+                      'Four Lifelong Companions for Lasting Achievement',
+                      'The DCB Success Formula & The TCB Framework · Gopal Krishna'
+                    );
+                  }
                 }}
                 className="relative group cursor-pointer h-full flex flex-col justify-between"
               >
@@ -1195,7 +1453,6 @@ function FourCompanionsAndDispatchesSection({
             </TiltCard>
           </div>
 
-          {/* Right Column: Interactive 4 Companions Matrix */}
           <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               {lifelongCompanions.map((comp, idx) => {
@@ -1232,7 +1489,6 @@ function FourCompanionsAndDispatchesSection({
               })}
             </div>
 
-            {/* Live Companion Comparison Across Both Field Dispatches */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={lifelongCompanions[highlightedCompanionIndex].id}
@@ -1287,7 +1543,6 @@ function FourCompanionsAndDispatchesSection({
           </div>
         </div>
 
-        {/* Full Interactive Field Leadership Dispatch Reader */}
         <AnimatePresence mode="wait">
           <motion.article
             key={activeDispatch.id}
@@ -1298,7 +1553,6 @@ function FourCompanionsAndDispatchesSection({
             className="rounded-[2rem] border border-white/15 bg-gradient-to-br from-ink-900 via-ink-950 to-gold-950/20 p-8 sm:p-12 shadow-2xl"
           >
             <div className="grid lg:grid-cols-12 gap-10">
-              {/* Left Narrative Column */}
               <div className="lg:col-span-5 space-y-6">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
                   {activeDispatch.badge}
@@ -1323,11 +1577,12 @@ function FourCompanionsAndDispatchesSection({
                   ))}
                 </div>
 
-                {/* Unboxed topic metadata */}
                 <div className="pt-4 border-t border-white/10 text-xs text-ink-400 flex flex-wrap items-center gap-2">
                   {activeDispatch.topics.map((topic, i) => (
                     <React.Fragment key={topic}>
-                      <span className="text-gold-300 font-medium">#{topic.replace(/\s+/g, '')}</span>
+                      <span className="text-gold-300 font-medium">
+                        #{topic.replace(/\s+/g, '')}
+                      </span>
                       {i < activeDispatch.topics.length - 1 && (
                         <span aria-hidden="true">·</span>
                       )}
@@ -1336,7 +1591,6 @@ function FourCompanionsAndDispatchesSection({
                 </div>
               </div>
 
-              {/* Right 4 Companions Step-by-Step + DCB & TCB Synthesis */}
               <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
                 <div className="grid sm:grid-cols-2 gap-4">
                   {activeDispatch.companionsInAction.map((item) => (
@@ -1357,7 +1611,6 @@ function FourCompanionsAndDispatchesSection({
                   ))}
                 </div>
 
-                {/* How DCB & TCB Interlock in this Dispatch */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-6 rounded-2xl border border-gold-500/30 bg-gold-400/[0.05]">
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300 mb-2">
@@ -1378,7 +1631,6 @@ function FourCompanionsAndDispatchesSection({
                   </div>
                 </div>
 
-                {/* Leader Reflection Callout & Availability Footer */}
                 <div className="p-6 rounded-2xl glass flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-gold-400 font-semibold">
@@ -2190,25 +2442,25 @@ function ExperienceAndCredentialsSection() {
 }
 
 function PosterLightboxModal({
-  open,
+  poster,
   onClose,
 }: {
-  open: boolean;
+  poster: { imgUrl: string; title: string; subtitle: string } | null;
   onClose: () => void;
 }) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    if (open) {
+    if (poster) {
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose]);
+  }, [poster, onClose]);
 
   return (
     <AnimatePresence>
-      {open && (
+      {poster && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2228,11 +2480,9 @@ function PosterLightboxModal({
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
-                  Four Lifelong Companions for Lasting Achievement
+                  {poster.title}
                 </p>
-                <p className="text-xs text-ink-400 mt-0.5">
-                  The DCB Success Formula &amp; The TCB Framework · Gopal Krishna
-                </p>
+                <p className="text-xs text-ink-400 mt-0.5">{poster.subtitle}</p>
               </div>
               <button
                 onClick={onClose}
@@ -2245,8 +2495,8 @@ function PosterLightboxModal({
 
             <div className="overflow-y-auto p-4 sm:p-6 flex items-center justify-center bg-ink-950">
               <img
-                src={fourCompanionsPosterImage}
-                alt="Four Lifelong Companions for lasting achievement — Curiosity, Courage, Perseverance, Gratitude with Humility"
+                src={poster.imgUrl}
+                alt={poster.title}
                 referrerPolicy="no-referrer"
                 className="max-h-[76vh] w-auto rounded-2xl object-contain shadow-2xl"
               />
@@ -2393,8 +2643,11 @@ function Footer() {
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           <div>
             <span className="font-serif text-xl font-bold text-white">
-              Gopal Krishna
+              गोपाल कृष्णा | Gopal Krishna
             </span>
+            <p className="text-xs text-gold-400 mt-1">
+              Author • Mentor • Coach • Trainer
+            </p>
             <p className="text-sm text-ink-400 leading-relaxed max-w-xs mt-3">
               Business leader, transformation strategist, and author of The DCB Success
               Formula and The TCB Framework. Where discipline meets direction, success
@@ -2411,6 +2664,7 @@ function Footer() {
             </h4>
             <div className="flex flex-col gap-2.5">
               {[
+                { label: 'About the Author', href: '#about' },
                 ...navLinks,
                 { label: 'DCB × TCB Matrix', href: '#framework' },
                 { label: 'Career & Credentials', href: '#experience' },
@@ -2473,8 +2727,8 @@ function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
           <p className="text-xs text-ink-500">
-            © {new Date().getFullYear()} Gopal Krishna · www.gopalkrishna.in · All rights
-            reserved.
+            © {new Date().getFullYear()} गोपाल कृष्णा | Gopal Krishna · www.gopalkrishna.in
+            · All rights reserved.
           </p>
           <button
             onClick={scrollToTop}
@@ -2493,21 +2747,27 @@ function Footer() {
 
 export default function App() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [posterOpen, setPosterOpen] = useState(false);
+  const [lightboxPoster, setLightboxPoster] = useState<{
+    imgUrl: string;
+    title: string;
+    subtitle: string;
+  } | null>(null);
+
+  const openPoster = (imgUrl: string, title: string, subtitle: string) => {
+    setLightboxPoster({ imgUrl, title, subtitle });
+  };
 
   return (
     <div className="relative min-h-screen bg-ink-950 text-white selection:bg-gold-400 selection:text-ink-950">
       <KineticCanvas />
       <Navbar />
       <main className="relative z-10">
-        <HeroSection
-          onSelectBook={setSelectedBook}
-          onOpenPoster={() => setPosterOpen(true)}
-        />
+        <HeroSection onSelectBook={setSelectedBook} onOpenPoster={openPoster} />
         <QuoteMarquee />
+        <DiwaliSpecialSection onOpenPoster={openPoster} />
         <AboutSection />
         <BooksSection onSelectBook={setSelectedBook} />
-        <FourCompanionsAndDispatchesSection onOpenPoster={() => setPosterOpen(true)} />
+        <FourCompanionsAndDispatchesSection onOpenPoster={openPoster} />
         <FrameworkSection />
         <TopLeadersSection />
         <TestimonialsSection />
@@ -2515,7 +2775,10 @@ export default function App() {
       </main>
       <Footer />
       <BookDossierModal book={selectedBook} onClose={() => setSelectedBook(null)} />
-      <PosterLightboxModal open={posterOpen} onClose={() => setPosterOpen(false)} />
+      <PosterLightboxModal
+        poster={lightboxPoster}
+        onClose={() => setLightboxPoster(null)}
+      />
     </div>
   );
 }
