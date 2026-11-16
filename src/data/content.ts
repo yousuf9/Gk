@@ -69,6 +69,14 @@ export interface Leader {
   domain: string;
 }
 
+export interface LeadershipMoment {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  caption: string;
+}
+
 export interface Experience {
   role: string;
   company: string;
@@ -102,12 +110,22 @@ export interface Testimonial {
   featured?: boolean;
 }
 
+export interface AnthemStanza {
+  id: string;
+  index: string;
+  label: string;
+  pillarTag: string;
+  seekTime: number;
+  lines: string[];
+  meaning: string;
+}
+
 export const navLinks: NavLink[] = [
   { label: 'Diwali', href: '#diwali' },
+  { label: 'Anthem', href: '#anthem' },
   { label: 'Books', href: '#books' },
   { label: 'Companions', href: '#companions' },
   { label: 'Top Leaders', href: '#leaders' },
-  { label: 'Reviews', href: '#testimonials' },
 ];
 
 export const portraitImage = '/images/19972f2d-f13f-4958-91d5-ea5027d907d9.jpeg';
@@ -792,9 +810,143 @@ export const skills: string[] = [
 ];
 
 export const marqueeQuotes: string[] = [
+  'हर दिन थोड़ा सीख रे मन, हर दिन थोड़ा जीत — अपने सच्चे कर्मों से तू, लिख दे अपना गीत।',
   '॥ तमसो मा ज्योतिर्गमय ॥ — Lead me from darkness to light.',
   'एक दीप ज्ञान का। एक संकल्प अच्छे कर्म का। — Light a lamp of learning. Take a step with purpose.',
   'Discipline creates the room where confidence grows.',
   'Consistency turns ordinary effort into uncommon results.',
   'Curiosity · Courage · Perseverance · Gratitude with Humility.',
 ];
+
+export const dcbAnthemContent = {
+  titleHindi: 'हर दिन थोड़ा सीख रे मन, हर दिन थोड़ा जीत',
+  shortTitleHindi: 'हर दिन थोड़ा जीत',
+  titleEnglish: 'Learn a Little Every Day, Win a Little Every Day',
+  subtitle: 'The Musical Anthem of Discipline × Consistency × Belief',
+  artist: 'गोपाल कृष्णा | Gopal Krishna',
+  sunoShortUrl: 'https://suno.com/s/u9GeZ4HEtKycFIc6',
+  sunoSongUrl: 'https://suno.com/song/f61dbb07-9665-4d76-a8fe-708de1a67977',
+  sunoEmbedUrl: 'https://suno.com/embed/f61dbb07-9665-4d76-a8fe-708de1a67977',
+  localMediaUrl: '/assets/suno/dcb-anthem.mp4',
+  coverImageUrl: '/assets/suno/dcb-anthem-cover.jpg',
+  coreDcbVerse: 'अनुशासन हो कदमों में, निरंतरता हो चाल, मन में अपने विश्वास रख, फिर कोशिश कर हर हाल।',
+  stanzas: [
+    {
+      id: 'stanza-1',
+      index: '01',
+      label: 'मुखड़ा · Opening Chorus',
+      pillarTag: 'Daily Mastery · छोटे-छोटे कदम',
+      seekTime: 0,
+      lines: [
+        'हर दिन थोड़ा सीख रे मन, हर दिन थोड़ा जीत,',
+        'अपने सच्चे कर्मों से तू, लिख दे अपना गीत।',
+        'मंच पे जो चमकेगा कल, आज उसे तू गढ़,',
+        'छोटे-छोटे कदमों से तू, मंज़िल की ओर बढ़।',
+      ],
+      meaning:
+        'Learn a little every day, win a little every day; write your own song through honest deeds. Shape today what will shine on stage tomorrow, advancing toward your destination through small, deliberate steps.',
+    },
+    {
+      id: 'stanza-2',
+      index: '02',
+      label: 'अंतरा १ · Verse I',
+      pillarTag: 'Self-Accountability · संकल्प और वचन',
+      seekTime: 24,
+      lines: [
+        'सुबह की पहली किरणों संग, संकल्प नया जगाना है,',
+        'कल जहाँ पर चूक हुई थी, आज उसे सुधराना है।',
+        'कोई देखे या ना देखे, अपना वचन निभाना है,',
+        'रोज़ पसीने की बूँदों से, सपनों को सींचते जाना है।',
+      ],
+      meaning:
+        'Awaken a fresh resolve with the first rays of morning and correct where you fell short yesterday. Whether anyone is watching or not, honor your word and water your dreams daily with drops of honest effort.',
+    },
+    {
+      id: 'stanza-3',
+      index: '03',
+      label: 'स्थायी · Refrain',
+      pillarTag: 'Authentic Action · सच्चे कर्म',
+      seekTime: 50,
+      lines: [
+        'हर दिन थोड़ा सीख रे मन, हर दिन थोड़ा जीत,',
+        'अपने सच्चे कर्मों से तू, लिख दे अपना गीत।',
+      ],
+      meaning:
+        'The core heartbeat of personal transformation: continuous learning paired with small daily victories.',
+    },
+    {
+      id: 'stanza-4',
+      index: '04',
+      label: 'अंतरा २ · Verse II',
+      pillarTag: 'Preparation & Resilience · तैयारी और साहस',
+      seekTime: 66,
+      lines: [
+        'कक्षा हो या खेल का मैदान, काम की कोई ज़िम्मेदारी,',
+        'हर चुनौती से पहले कर ले, मन से अपनी तैयारी।',
+        'गिरना भी सिखलाता हमको, कहाँ सँभलकर चलना है,',
+        'अपने बीते कल से आगे, आज हमें कुछ बढ़ना है।',
+      ],
+      meaning:
+        'Whether in the classroom, on the playing field, or in any professional responsibility, prepare your mind before every challenge. Even falling teaches us where to walk with care so we outgrow our yesterday.',
+    },
+    {
+      id: 'stanza-5',
+      index: '05',
+      label: 'अंतरा ३ · The DCB Verse',
+      pillarTag: 'Discipline × Consistency × Belief · अनुशासन · निरंतरता · विश्वास',
+      seekTime: 96,
+      lines: [
+        'अनुशासन हो कदमों में, निरंतरता हो चाल,',
+        'मन में अपने विश्वास रख, फिर कोशिश कर हर हाल।',
+        'साथ मिले तो साथ बढ़ें, सबका हौसला बढ़ाएँ,',
+        'अपनी मेहनत के उजियारे, औरों तक भी पहुँचाएँ।',
+      ],
+      meaning:
+        'Let Discipline guide your steps, Consistency define your pace, and Belief anchor your heart as you strive in every circumstance. Grow together, uplift everyone’s courage, and share the light of your hard work.',
+    },
+    {
+      id: 'stanza-6',
+      index: '06',
+      label: 'समापन · Finale',
+      pillarTag: 'Compounding Practice · सच्चा अभ्यास और नया सवेरा',
+      seekTime: 126,
+      lines: [
+        'तालियाँ जिस दिन गूँजेंगी, याद हमें यह आएगा',
+        'रोज़ किया जो सच्चा अभ्यास, वही काम आ जाएगा।',
+        'जीत की अपनी नींव बना, उम्मीदों का दीप जला,',
+        'आज की तैयारी से ही, कल का नया सवेरा ला।',
+      ],
+      meaning:
+        'On the day applause echoes, we will remember that it was true daily practice that made the difference. Lay the foundation of victory, light the lamp of hope, and bring tomorrow’s new dawn through today’s preparation.',
+    },
+  ] as AnthemStanza[],
+};
+
+export const leadershipBookMoments: LeadershipMoment[] = [
+  {
+    id: 'dilip-gohel',
+    image: '/assets/aistudio/2e3a4f19-f865-47a8-a1e3-c9aa6f83f6e3_db598b30.jpeg',
+    title: 'With Mr. Dilip Gohel',
+    subtitle: 'The DCB Success Formula & The TCB Framework',
+    caption:
+      'Presenting both titles — uniting personal Discipline, Consistency, and Belief with Top-line, Cost-line, and Bottom-line business strategy.',
+  },
+  {
+    id: 'executive-tcb-1',
+    image: '/assets/aistudio/b866ba5f-4308-451d-b962-8496bfae3e52_dc96a6f0.jpeg',
+    title: 'Senior Leadership Exchange',
+    subtitle: 'Presenting The TCB Framework',
+    caption:
+      'Sharing practical perspectives on sustainable business growth, operational discipline, and team alignment across cement and concrete operations.',
+  },
+  {
+    id: 'executive-tcb-2',
+    image: '/assets/aistudio/c7e10867-effb-4648-88a2-36d41a66ba12_4635ff2a.jpeg',
+    title: 'Executive Book Presentation',
+    subtitle: 'The TCB Framework in Action',
+    caption:
+      'Dialogue with senior leadership on turning strategic clarity across Top-line, Cost-line, and Bottom-line into enduring enterprise value.',
+  },
+];
+
+

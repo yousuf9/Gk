@@ -22,6 +22,7 @@ import {
   Calendar,
   Check,
   Compass,
+  Copy,
   Flag,
   Flame,
   Globe,
@@ -32,12 +33,17 @@ import {
   MapPin,
   Maximize2,
   Menu,
+  Music,
+  Pause,
+  Play,
   Quote,
   Repeat,
   Sprout,
   Star,
   Target,
   Trophy,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { KineticCanvas } from './components/KineticCanvas';
@@ -52,6 +58,7 @@ import {
   books,
   booksHoldingImage,
   certifications,
+  dcbAnthemContent,
   dcbPillars,
   diwaliSpecialContent,
   diwaliSpecialImage,
@@ -60,6 +67,7 @@ import {
   fourCompanionsPosterImage,
   fullAcknowledgementStatement,
   Leader,
+  leadershipBookMoments,
   leadershipDispatches,
   lifelongCompanions,
   marqueeQuotes,
@@ -375,11 +383,11 @@ function HeroSection({
                 </MagneticButton>
 
                 <MagneticButton
-                  href="#companions"
+                  href="#anthem"
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl glass text-white text-sm font-semibold hover:bg-white/10 transition-all whitespace-nowrap shrink-0"
                 >
-                  <Lightbulb className="w-4 h-4 text-gold-400" />
-                  Four Lifelong Companions
+                  <Music className="w-4 h-4 text-gold-400" />
+                  हर दिन थोड़ा जीत · Anthem
                 </MagneticButton>
 
                 <MagneticButton
@@ -979,6 +987,493 @@ function DiwaliSpecialSection({
               );
             })}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AnthemSection() {
+  const mediaRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(160);
+  const [activeStanzaId, setActiveStanzaId] = useState<string>(
+    dcbAnthemContent.stanzas[0].id
+  );
+  const [playerMode, setPlayerMode] = useState<'studio' | 'suno-embed'>('studio');
+  const [showEnglishMeaning, setShowEnglishMeaning] = useState<boolean>(true);
+  const [copiedLyrics, setCopiedLyrics] = useState<boolean>(false);
+
+  const togglePlay = () => {
+    const el = mediaRef.current;
+    if (!el) return;
+    if (el.paused) {
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  };
+
+  const toggleMute = () => {
+    const el = mediaRef.current;
+    if (!el) return;
+    el.muted = !el.muted;
+    setIsMuted(el.muted);
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextTime = Number(e.target.value);
+    setCurrentTime(nextTime);
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = nextTime;
+    }
+  };
+
+  const jumpToStanza = (stanzaId: string, seekTime: number) => {
+    setActiveStanzaId(stanzaId);
+    if (playerMode === 'studio' && mediaRef.current) {
+      mediaRef.current.currentTime = seekTime;
+      mediaRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    const el = mediaRef.current;
+    if (!el) return;
+    const t = el.currentTime;
+    setCurrentTime(t);
+
+    // Highlight active stanza based on current playback position
+    const currentStanza = [...dcbAnthemContent.stanzas]
+      .reverse()
+      .find((s) => t >= s.seekTime);
+    if (currentStanza && currentStanza.id !== activeStanzaId) {
+      setActiveStanzaId(currentStanza.id);
+    }
+  };
+
+  const formatTime = (secs: number) => {
+    if (!Number.isFinite(secs) || secs < 0) return '0:00';
+    const mins = Math.floor(secs / 60);
+    const rem = Math.floor(secs % 60);
+    return `${mins}:${String(rem).padStart(2, '0')}`;
+  };
+
+  const handleCopyLyrics = () => {
+    const fullText = [
+      dcbAnthemContent.titleHindi,
+      `Listen on Suno: ${dcbAnthemContent.sunoShortUrl}`,
+      '',
+      ...dcbAnthemContent.stanzas.map((s) => s.lines.join('\n')),
+      '',
+      `— ${dcbAnthemContent.artist}`,
+    ].join('\n');
+
+    navigator.clipboard?.writeText(fullText);
+    setCopiedLyrics(true);
+    setTimeout(() => setCopiedLyrics(false), 2400);
+  };
+
+  return (
+    <section id="anthem" className="relative py-28 lg:py-36 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_25%,rgba(224,171,63,0.16),transparent_40%),radial-gradient(circle_at_82%_75%,rgba(41,195,180,0.12),transparent_40%)] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14"
+        >
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-gold-400">
+              <span>Musical Anthem &amp; Kavita</span>
+              <span aria-hidden="true">·</span>
+              <span className="text-teal-300">Discipline × Consistency × Belief</span>
+            </div>
+
+            <h2
+              className="font-serif text-4xl sm:text-6xl font-bold text-gradient-gold mt-3 leading-tight"
+              style={{ textWrap: 'balance' }}
+            >
+              {dcbAnthemContent.titleHindi}
+            </h2>
+            <p className="font-serif text-xl sm:text-2xl text-ink-200 italic mt-2">
+              {dcbAnthemContent.titleEnglish} — {dcbAnthemContent.subtitle}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 self-start lg:self-end">
+            <button
+              type="button"
+              onClick={handleCopyLyrics}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl glass text-xs font-semibold text-ink-200 hover:text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              {copiedLyrics ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-teal-400" />
+                  Lyrics &amp; Link Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-gold-400" />
+                  Copy Lyrics &amp; Link
+                </>
+              )}
+            </button>
+
+            <a
+              href={dcbAnthemContent.sunoShortUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-400 text-ink-950 text-xs font-semibold hover:bg-gold-300 transition-colors shadow-lg shadow-gold-500/20 whitespace-nowrap shrink-0"
+            >
+              Listen on Suno
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* Main 12-Column Split: Studio Audio/Video Player Left (5 cols) + Interactive Stanza Explorer Right (7 cols) */}
+        <div className="grid lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Sticky Interactive Anthem Player */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-5 lg:sticky lg:top-28 space-y-5"
+          >
+            {/* Player Mode Switcher */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1 p-1.5 rounded-xl glass">
+                <button
+                  type="button"
+                  onClick={() => setPlayerMode('studio')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                    playerMode === 'studio'
+                      ? 'bg-gold-400 text-ink-950'
+                      : 'text-ink-300 hover:text-white'
+                  }`}
+                >
+                  Studio Player
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (mediaRef.current && !mediaRef.current.paused) {
+                      mediaRef.current.pause();
+                    }
+                    setPlayerMode('suno-embed');
+                  }}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                    playerMode === 'suno-embed'
+                      ? 'bg-gold-400 text-ink-950'
+                      : 'text-ink-300 hover:text-white'
+                  }`}
+                >
+                  Suno Official Embed
+                </button>
+              </div>
+
+              <span className="text-xs text-ink-400 tabular-nums">
+                {dcbAnthemContent.stanzas.length} Stanzas · Hindi
+              </span>
+            </div>
+
+            <TiltCard
+              glowColor="gold"
+              intensity={5}
+              className="rounded-3xl border border-gold-400/40 bg-ink-900 overflow-hidden shadow-2xl shadow-gold-500/10"
+            >
+              {playerMode === 'studio' ? (
+                <div className="flex flex-col">
+                  {/* Video / Cover Viewport */}
+                  <div
+                    onClick={togglePlay}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        togglePlay();
+                      }
+                    }}
+                    className="relative aspect-square w-full bg-ink-950 overflow-hidden cursor-pointer group"
+                  >
+                    <video
+                      ref={mediaRef}
+                      src={dcbAnthemContent.localMediaUrl}
+                      poster={dcbAnthemContent.coverImageUrl}
+                      playsInline
+                      preload="metadata"
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      onEnded={() => setIsPlaying(false)}
+                      onTimeUpdate={handleTimeUpdate}
+                      onLoadedMetadata={(e) => {
+                        if (Number.isFinite(e.currentTarget.duration)) {
+                          setDuration(e.currentTarget.duration);
+                        }
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/35 to-transparent" />
+
+                    {/* Center Play/Pause Overlay Button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div
+                        className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl ${
+                          isPlaying
+                            ? 'bg-ink-950/70 text-gold-400 border border-gold-400/50 opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100'
+                            : 'bg-gold-400 text-ink-950 scale-100 hover:scale-105 shadow-gold-500/30'
+                        }`}
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-7 h-7 fill-current" />
+                        ) : (
+                          <Play className="w-7 h-7 fill-current ml-0.5" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom Overlay Info */}
+                    <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between gap-4">
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300">
+                          {dcbAnthemContent.artist}
+                        </div>
+                        <h3 className="font-serif text-2xl font-bold text-white mt-0.5">
+                          {dcbAnthemContent.shortTitleHindi}
+                        </h3>
+                      </div>
+
+                      {/* Animated Equalizer Bars when playing */}
+                      <div className="flex items-end gap-1 h-6 shrink-0" aria-hidden="true">
+                        {[0.55, 0.95, 0.7, 1, 0.6].map((h, i) => (
+                          <span
+                            key={i}
+                            className={`w-1 rounded-full bg-gold-400 transition-all duration-300 ${
+                              isPlaying ? 'animate-pulse' : 'opacity-40'
+                            }`}
+                            style={{
+                              height: isPlaying ? `${Math.round(h * 24)}px` : '6px',
+                              animationDelay: `${i * 120}ms`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Studio Transport & Scrub Controls */}
+                  <div className="p-6 bg-ink-900 border-t border-white/10 space-y-4">
+                    <div className="space-y-1.5">
+                      <input
+                        type="range"
+                        min={0}
+                        max={duration || 160}
+                        step={0.5}
+                        value={currentTime}
+                        onChange={handleSeek}
+                        aria-label="Seek audio position"
+                        className="w-full accent-gold-400 cursor-pointer h-1.5 bg-white/15 rounded-lg"
+                      />
+                      <div className="flex items-center justify-between text-xs font-mono text-ink-400 tabular-nums">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(duration)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={togglePlay}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-400 text-ink-950 text-xs font-semibold hover:bg-gold-300 transition-colors cursor-pointer"
+                        >
+                          {isPlaying ? (
+                            <>
+                              <Pause className="w-4 h-4 fill-current" />
+                              Pause Anthem
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-4 h-4 fill-current" />
+                              Play Anthem
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={toggleMute}
+                          aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
+                          className="p-2.5 rounded-xl glass text-ink-200 hover:text-white transition-colors cursor-pointer"
+                        >
+                          {isMuted ? (
+                            <VolumeX className="w-4 h-4 text-gold-400" />
+                          ) : (
+                            <Volume2 className="w-4 h-4 text-gold-400" />
+                          )}
+                        </button>
+                      </div>
+
+                      <a
+                        href={dcbAnthemContent.sunoShortUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-gold-300 hover:text-gold-200 inline-flex items-center gap-1 whitespace-nowrap shrink-0"
+                      >
+                        suno.com/s/u9GeZ4HEtKycFIc6
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-ink-950 space-y-4">
+                  <div className="rounded-2xl overflow-hidden border border-white/10 bg-ink-900">
+                    <iframe
+                      src={dcbAnthemContent.sunoEmbedUrl}
+                      title="हर दिन थोड़ा जीत — Suno Audio Player"
+                      width="100%"
+                      height="240"
+                      allow="autoplay; encrypted-media; fullscreen"
+                      referrerPolicy="no-referrer"
+                      className="w-full border-0"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between px-2 text-xs text-ink-300">
+                    <span>Official Suno Stream</span>
+                    <a
+                      href={dcbAnthemContent.sunoShortUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold-300 hover:text-gold-200 font-semibold inline-flex items-center gap-1"
+                    >
+                      Open on Suno <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              )}
+            </TiltCard>
+
+            {/* Core DCB Verse Callout Card */}
+            <div className="p-6 rounded-3xl border border-gold-400/30 bg-gradient-to-br from-gold-950/35 via-ink-900 to-ink-950 space-y-2">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                The DCB Formula in Verse
+              </div>
+              <p className="font-serif text-lg sm:text-xl text-white leading-relaxed">
+                “{dcbAnthemContent.coreDcbVerse}”
+              </p>
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-gold-300">
+                <span>अनुशासन (Discipline)</span>
+                <span aria-hidden="true">·</span>
+                <span>निरंतरता (Consistency)</span>
+                <span aria-hidden="true">·</span>
+                <span>विश्वास (Belief)</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Complete 6-Stanza Hindi Lyrics & Thematic Explorer */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.65 }}
+            className="lg:col-span-7 space-y-5"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-white/10">
+              <div className="text-xs text-ink-300">
+                Click any verse below to jump to that stanza in the studio player
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEnglishMeaning(!showEnglishMeaning)}
+                className="text-xs font-semibold text-gold-300 hover:text-gold-200 transition-colors cursor-pointer"
+              >
+                {showEnglishMeaning
+                  ? 'Hide English Reflections'
+                  : 'Show English Reflections'}
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {dcbAnthemContent.stanzas.map((stanza) => {
+                const isActive = activeStanzaId === stanza.id;
+                const isDcbVerse = stanza.id === 'stanza-5';
+                return (
+                  <div
+                    key={stanza.id}
+                    onClick={() => jumpToStanza(stanza.id, stanza.seekTime)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        jumpToStanza(stanza.id, stanza.seekTime);
+                      }
+                    }}
+                    className={`p-6 sm:p-7 rounded-3xl border transition-all duration-300 cursor-pointer ${
+                      isActive
+                        ? 'border-gold-400/70 bg-gradient-to-br from-ink-900 via-ink-900 to-gold-950/40 shadow-xl shadow-gold-500/10'
+                        : isDcbVerse
+                        ? 'border-teal-400/35 bg-teal-950/15 hover:border-gold-400/50'
+                        : 'border-white/10 bg-white/[0.025] hover:border-white/25'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="font-mono font-bold text-gold-400 tabular-nums">
+                          {stanza.index}
+                        </span>
+                        <span aria-hidden="true" className="text-ink-500">
+                          ·
+                        </span>
+                        <span className="font-semibold text-white">
+                          {stanza.label}
+                        </span>
+                        <span aria-hidden="true" className="text-ink-500">
+                          ·
+                        </span>
+                        <span className="text-gold-300">{stanza.pillarTag}</span>
+                      </div>
+
+                      <span className="text-xs font-mono text-ink-400 tabular-nums inline-flex items-center gap-1.5">
+                        <Play className="w-3 h-3 text-gold-400 fill-current" />
+                        {formatTime(stanza.seekTime)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {stanza.lines.map((line, lineIdx) => (
+                        <p
+                          key={lineIdx}
+                          className={`font-serif text-xl sm:text-2xl leading-relaxed ${
+                            isActive ? 'text-gold-200 font-semibold' : 'text-white'
+                          }`}
+                        >
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+
+                    {showEnglishMeaning && (
+                      <p className="mt-4 pt-3.5 border-t border-white/10 text-xs sm:text-sm text-ink-300 leading-relaxed">
+                        {stanza.meaning}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -1902,7 +2397,11 @@ function FrameworkSection() {
   );
 }
 
-function TopLeadersSection() {
+function TopLeadersSection({
+  onOpenPoster,
+}: {
+  onOpenPoster: (imgUrl: string, title: string, subtitle: string) => void;
+}) {
   const [filterTier, setFilterTier] = useState<'all' | 'chairman' | 'executive'>('all');
   const [activeLeader, setActiveLeader] = useState<Leader>(acknowledgedLeaders[0]);
 
@@ -2070,6 +2569,75 @@ function TopLeadersSection() {
             })}
           </AnimatePresence>
         </motion.div>
+
+        {/* Leadership Book Presentation Moments Gallery */}
+        <div className="mt-16">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
+                Leadership in Person · Book Presentations
+              </p>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1.5">
+                Conversations &amp; Shared Milestones
+              </h3>
+            </div>
+            <p className="text-xs text-ink-400">
+              Click any photograph to inspect full resolution
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {leadershipBookMoments.map((moment, idx) => (
+              <motion.div
+                key={moment.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
+              >
+                <TiltCard
+                  glowColor="gold"
+                  intensity={5}
+                  className="group rounded-3xl border border-white/15 bg-ink-900/90 overflow-hidden h-full flex flex-col"
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onOpenPoster(moment.image, moment.title, moment.subtitle)
+                    }
+                    className="w-full text-left flex flex-col h-full cursor-pointer"
+                  >
+                    <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink-950">
+                      <img
+                        src={moment.image}
+                        alt={`${moment.title} — ${moment.subtitle}`}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent" />
+                      <div className="absolute top-4 right-4 w-9 h-9 rounded-full glass flex items-center justify-center text-white opacity-80 group-hover:opacity-100 transition-opacity">
+                        <Maximize2 className="w-4 h-4" />
+                      </div>
+                      <div className="absolute bottom-4 left-5 right-5">
+                        <div className="text-xs font-semibold text-gold-300">
+                          {moment.subtitle}
+                        </div>
+                        <h4 className="font-serif text-xl font-bold text-white mt-0.5">
+                          {moment.title}
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1">
+                      <p className="text-xs sm:text-sm text-ink-300 leading-relaxed">
+                        {moment.caption}
+                      </p>
+                    </div>
+                  </button>
+                </TiltCard>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-12 p-7 sm:p-8 rounded-3xl glass text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400 mb-3">
@@ -2667,6 +3235,7 @@ function Footer() {
                 { label: 'About the Author', href: '#about' },
                 ...navLinks,
                 { label: 'DCB × TCB Matrix', href: '#framework' },
+                { label: 'Reader Reviews', href: '#testimonials' },
                 { label: 'Career & Credentials', href: '#experience' },
               ].map((item) => (
                 <button
@@ -2696,6 +3265,14 @@ function Footer() {
                 className="inline-flex items-center gap-2 text-sm text-gold-300 hover:text-gold-200 transition-colors"
               >
                 <Globe className="w-4 h-4" /> www.gopalkrishna.in
+              </a>
+              <a
+                href={dcbAnthemContent.sunoShortUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-gold-300 hover:text-gold-200 transition-colors"
+              >
+                <Music className="w-4 h-4" /> हर दिन थोड़ा जीत (Suno Anthem)
               </a>
               <a
                 href="https://www.linkedin.com/in/gopal-krishna-670a4970"
@@ -2765,11 +3342,12 @@ export default function App() {
         <HeroSection onSelectBook={setSelectedBook} onOpenPoster={openPoster} />
         <QuoteMarquee />
         <DiwaliSpecialSection onOpenPoster={openPoster} />
+        <AnthemSection />
         <AboutSection />
         <BooksSection onSelectBook={setSelectedBook} />
         <FourCompanionsAndDispatchesSection onOpenPoster={openPoster} />
         <FrameworkSection />
-        <TopLeadersSection />
+        <TopLeadersSection onOpenPoster={openPoster} />
         <TestimonialsSection />
         <ExperienceAndCredentialsSection />
       </main>
